@@ -42,10 +42,10 @@
   --color-accent: var(--accent);
   --color-accent-glow: var(--accent-glow);
 
+  /* Utilities: font-sans (body/UI), font-title (chapter titles), font-mark (temp wordmark) */
   --font-sans: var(--font-body);
-  --font-body: var(--font-body);
-  --font-chapter: var(--font-chapter);
-  --font-wordmark: var(--font-wordmark-temp);
+  --font-title: var(--font-chapter);
+  --font-mark: var(--font-wordmark-temp);
 }
 
 html {
