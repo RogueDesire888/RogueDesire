@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import { Grain } from "@/components/atmosphere/Grain";
+import { site } from "@/config/site";
 import { fontVariables } from "@/lib/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://roguedesire.com"),
+  metadataBase: new URL(site.url),
   title: {
-    default: "Rogue Desire",
-    template: "%s | Rogue Desire",
+    default: site.name,
+    template: `%s | ${site.name}`,
   },
-  description:
-    "A nightlife universe built through sound, atmosphere, memory, and desire.",
+  description: site.description,
 };
 
 export default function RootLayout({

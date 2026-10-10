@@ -1,5 +1,6 @@
 import { LaserGrid } from "@/components/atmosphere/LaserGrid";
 import { Wordmark } from "@/components/brand/Wordmark";
+import { site } from "@/config/site";
 
 export default function Home() {
   return (
@@ -12,10 +13,10 @@ export default function Home() {
         <Wordmark className="text-[clamp(3.5rem,19vw,6.5rem)] md:text-[clamp(4rem,10vw,9rem)]" />
       </h1>
       <p className="relative mt-8 text-lg font-medium tracking-wide text-rd-white sm:text-xl">
-        Architects of Temporary Realities.
+        {site.tagline}
       </p>
       <p className="relative mt-4 max-w-[34ch] text-base leading-relaxed text-rd-chrome sm:text-lg">
-        A nightlife universe built through sound, atmosphere, memory, and desire.
+        {site.description}
       </p>
     </section>
   );
