@@ -1,1 +1,72 @@
 @import "tailwindcss";
+
+:root {
+  /* Base */
+  --rd-black: #030303;
+  --rd-charcoal: #0b0b0f;
+  --rd-white: #f5f5f7;
+  --rd-chrome: #c8ceda;
+
+  /* Primary brand energy. Switching the brand color is a one-line change here. */
+  --rd-violet: #8b2cff;
+  --rd-violet-soft: #b879ff;
+
+  /* Chapter accents: used only inside their chapter */
+  --rd-orange: #ff5a1f;
+  --rd-ice: #a8e8ff;
+  --rd-green: #39ff88;
+  --rd-crimson: #8a102a;
+  --rd-gold: #f3c15f;
+
+  --accent: var(--rd-violet);
+  --accent-glow: var(--rd-violet-soft);
+}
+
+[data-chapter="ascension"] {
+  --accent: var(--rd-violet);
+  --accent-glow: var(--rd-violet-soft);
+}
+
+@theme inline {
+  --color-rd-black: var(--rd-black);
+  --color-rd-charcoal: var(--rd-charcoal);
+  --color-rd-white: var(--rd-white);
+  --color-rd-chrome: var(--rd-chrome);
+  --color-rd-violet: var(--rd-violet);
+  --color-rd-violet-soft: var(--rd-violet-soft);
+  --color-rd-orange: var(--rd-orange);
+  --color-rd-ice: var(--rd-ice);
+  --color-rd-green: var(--rd-green);
+  --color-rd-crimson: var(--rd-crimson);
+  --color-rd-gold: var(--rd-gold);
+  --color-accent: var(--accent);
+  --color-accent-glow: var(--accent-glow);
+
+  --font-sans: var(--font-body);
+  --font-body: var(--font-body);
+  --font-chapter: var(--font-chapter);
+  --font-wordmark: var(--font-wordmark-temp);
+}
+
+html {
+  color-scheme: dark;
+  background: var(--rd-black);
+}
+
+body {
+  background: var(--rd-black);
+  color: var(--rd-white);
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--rd-white);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-glow);
+  outline-offset: 3px;
+}
