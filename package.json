@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "lint:brand": "node scripts/brand-lint.mjs",
+    "prebuild": "npm run lint:brand"
   },
   "dependencies": {
     "next": "16.4.0",
