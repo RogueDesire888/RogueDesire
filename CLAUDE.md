@@ -139,7 +139,7 @@ Legal entity name, public contact email, city reveal timing, venue, date, hours,
 
 ## Task status
 
-- [ ] 1. Scaffold, tokens, fonts, layout shell, placeholder hero, brand linter, Vercel preview
+- [x] 1. Scaffold, tokens, fonts, layout shell, placeholder hero, brand linter, Vercel preview
 - [ ] 2. Content layer: Zod schemas, chapter/artifact/transmission files, null gating
 - [ ] 3. Navbar + overlay menu, Footer, buttons, section primitives
 - [ ] 4. Home
@@ -150,3 +150,7 @@ Legal entity name, public contact email, city reveal timing, venue, date, hours,
 - [ ] 9. SEO: metadata, OG images, sitemap, robots, JSON-LD, privacy page, 404
 - [ ] 10. QA: links, forms, accessibility, performance, mobile
 - [ ] 11. Domain cutover
+
+Preview URL (Task 1): https://rogue-desire-rcggp4d4a-celestialsoundrecords-9938s-projects.vercel.app
+Vercel project: rogue-desire (team celestialsoundrecords-9938s-projects). Previews are behind Vercel deployment protection.
+Notes: CSS Modules do not work with the scaffolded Turbopack Tailwind rule in next.config.ts; use plain prefixed CSS files (see src/components/atmosphere/laser-grid.css). Tailwind font utilities: font-sans, font-title, font-mark.
