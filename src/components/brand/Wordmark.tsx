@@ -5,6 +5,11 @@ import path from "node:path";
  * The single swap point for the Rogue Desire wordmark.
  * When public/brand/wordmark.svg exists it is rendered; otherwise a
  * temporary neon-outline placeholder set in the placeholder font.
+ *
+ * The full home hero artwork lives in public/brand/hero-ascension.png and is
+ * rendered by the home page, not here. This text version stays for small uses
+ * (nav, footer) until a separate compact wordmark asset is delivered.
+ * TODO: a compact wordmark asset (SVG, legible at nav size) is still needed.
  */
 const WORDMARK_SRC = "/brand/wordmark.svg";
 const hasWordmarkSvg = fs.existsSync(
