@@ -1,4 +1,4 @@
-import { Hanken_Grotesk, Rubik_Wet_Paint, Syncopate } from "next/font/google";
+import { Hanken_Grotesk, Syncopate } from "next/font/google";
 
 export const fontBody = Hanken_Grotesk({
   subsets: ["latin"],
@@ -14,14 +14,6 @@ export const fontChapter = Syncopate({
   display: "swap",
 });
 
-/** TEMPORARY: wordmark placeholder until public/brand/wordmark.svg arrives. */
-export const fontWordmarkTemp = Rubik_Wet_Paint({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-wordmark-temp",
-  display: "swap",
-});
-
-export const fontVariables = [fontBody, fontChapter, fontWordmarkTemp]
+export const fontVariables = [fontBody, fontChapter]
   .map((f) => f.variable)
   .join(" ");

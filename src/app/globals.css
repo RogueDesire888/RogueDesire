@@ -20,6 +20,9 @@
 
   --accent: var(--rd-violet);
   --accent-glow: var(--rd-violet-soft);
+
+  /* Home hero wordmark: one full rotation */
+  --spin-duration: 14s;
 }
 
 [data-chapter="ascension"] {
@@ -62,10 +65,9 @@
   --color-accent: var(--accent);
   --color-accent-glow: var(--accent-glow);
 
-  /* Utilities: font-sans (body/UI), font-title (chapter titles), font-mark (temp wordmark) */
+  /* Utilities: font-sans (body/UI), font-title (chapter titles) */
   --font-sans: var(--font-body);
   --font-title: var(--font-chapter);
-  --font-mark: var(--font-wordmark-temp);
 }
 
 html {
