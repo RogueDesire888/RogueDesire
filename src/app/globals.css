@@ -27,6 +27,26 @@
   --accent-glow: var(--rd-violet-soft);
 }
 
+[data-chapter="eclipse"] {
+  --accent: var(--rd-chrome);
+  --accent-glow: var(--rd-violet);
+}
+
+[data-chapter="neon-garden"] {
+  --accent: var(--rd-green);
+  --accent-glow: var(--rd-green);
+}
+
+[data-chapter="mirage"] {
+  --accent: var(--rd-gold);
+  --accent-glow: var(--rd-gold);
+}
+
+[data-chapter="velocity"] {
+  --accent: var(--rd-ice);
+  --accent-glow: var(--rd-white);
+}
+
 @theme inline {
   --color-rd-black: var(--rd-black);
   --color-rd-charcoal: var(--rd-charcoal);
