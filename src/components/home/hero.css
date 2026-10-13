@@ -1,0 +1,28 @@
+/* Home hero artwork: edges dissolve into --rd-black on all four sides. */
+.rd-hero-art {
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 12%, #000 82%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 12%, #000 82%, transparent 100%);
+  mask-composite: intersect;
+  animation: rd-hero-pulse 6s ease-in-out infinite;
+}
+
+@keyframes rd-hero-pulse {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.14);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rd-hero-art {
+    animation: none;
+  }
+}

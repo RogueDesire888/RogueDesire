@@ -1,21 +1,28 @@
-import { LaserGrid } from "@/components/atmosphere/LaserGrid";
-import { Wordmark } from "@/components/brand/Wordmark";
+import Image from "next/image";
+import "@/components/home/hero.css";
 import { site } from "@/config/site";
+import heroArt from "../../public/brand/hero-ascension.png";
 
 export default function Home() {
   return (
     <section
       aria-labelledby="hero-title"
-      className="relative isolate flex min-h-svh flex-col items-center justify-center overflow-hidden px-4 py-24 text-center"
+      className="relative isolate flex min-h-svh flex-col items-center justify-center overflow-hidden pb-24 pt-16 text-center"
     >
-      <LaserGrid />
-      <h1 id="hero-title" className="relative">
-        <Wordmark className="text-[clamp(3.5rem,19vw,6.5rem)] md:text-[clamp(4rem,10vw,9rem)]" />
+      <h1 id="hero-title" className="sr-only">
+        Rogue Desire
       </h1>
-      <p className="relative mt-8 text-lg font-medium tracking-wide text-rd-white sm:text-xl">
+      <Image
+        src={heroArt}
+        alt="Rogue Desire"
+        priority
+        sizes="100vw"
+        className="rd-hero-art h-auto max-h-[85vh] w-full object-contain object-center md:object-cover md:object-[50%_45%]"
+      />
+      <p className="relative mt-6 px-4 text-lg font-medium tracking-wide text-rd-white sm:text-xl">
         {site.tagline}
       </p>
-      <p className="relative mt-4 max-w-[34ch] text-base leading-relaxed text-rd-chrome sm:text-lg">
+      <p className="relative mt-4 max-w-[34ch] text-balance px-4 text-base leading-relaxed text-rd-chrome sm:text-lg">
         {site.description}
       </p>
     </section>
