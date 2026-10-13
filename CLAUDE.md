@@ -140,7 +140,7 @@ Legal entity name, public contact email, city reveal timing, venue, date, hours,
 ## Task status
 
 - [x] 1. Scaffold, tokens, fonts, layout shell, placeholder hero, brand linter, Vercel preview
-- [ ] 2. Content layer: Zod schemas, chapter/artifact/transmission files, null gating
+- [x] 2. Content layer: Zod schemas, chapter/artifact/transmission files, null gating
 - [ ] 3. Navbar + overlay menu, Footer, buttons, section primitives
 - [ ] 4. Home
 - [ ] 5. Manifesto
@@ -152,5 +152,7 @@ Legal entity name, public contact email, city reveal timing, venue, date, hours,
 - [ ] 11. Domain cutover
 
 Preview URL (Task 1): https://rogue-desire-rcggp4d4a-celestialsoundrecords-9938s-projects.vercel.app
-Vercel project: rogue-desire (team celestialsoundrecords-9938s-projects). Previews are behind Vercel deployment protection.
-Notes: CSS Modules do not work with the scaffolded Turbopack Tailwind rule in next.config.ts; use plain prefixed CSS files (see src/components/atmosphere/laser-grid.css). Tailwind font utilities: font-sans, font-title, font-mark.
+Vercel project: rogue-desire (team celestialsoundrecords-9938s-projects). Deployments are behind Vercel deployment protection.
+Git integration: connected to RogueDesire888/RogueDesire. Every push to main auto-deploys to the Production environment (vercel.app URL only, no custom domain yet).
+Latest deployment (Task 2): https://rogue-desire-q52zsbqjz-celestialsoundrecords-9938s-projects.vercel.app
+Notes: CSS Modules do not work with the scaffolded Turbopack Tailwind rule in next.config.ts; use plain prefixed CSS files (see src/components/atmosphere/laser-grid.css). Tailwind font utilities: font-sans, font-title, font-mark. Content imports use the `@content/*` alias; render optional fields only through `isPublic()` from src/lib/content.ts.
