@@ -1,5 +1,8 @@
-/* Home hero artwork: edges dissolve into --rd-black on all four sides. */
-.rd-hero-art {
+/* Home hero: scene background + spinning wordmark + floor reflection.
+   Spin speed: --spin-duration in globals.css. */
+
+/* Scene edges dissolve into --rd-black on all four sides. */
+.rd-hero-scene {
   -webkit-mask-image:
     linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%),
     linear-gradient(to bottom, transparent 0%, #000 12%, #000 82%, transparent 100%);
@@ -8,21 +11,84 @@
     linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%),
     linear-gradient(to bottom, transparent 0%, #000 12%, #000 82%, transparent 100%);
   mask-composite: intersect;
-  animation: rd-hero-pulse 6s ease-in-out infinite;
 }
 
-@keyframes rd-hero-pulse {
+/* Laser origin in the scene artwork sits at 50% / 68%. */
+.rd-hero-wordmark,
+.rd-hero-reflection {
+  position: absolute;
+  left: 50%;
+  top: 68%;
+  width: 85%;
+}
+
+.rd-hero-wordmark {
+  transform: translate(-50%, -50%);
+}
+
+.rd-hero-reflection {
+  transform: translate(-50%, 44%);
+  opacity: 0.15;
+  filter: blur(3px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 55%);
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 55%);
+}
+
+.rd-hero-flip {
+  transform: scaleY(-1);
+}
+
+@media (min-width: 768px) {
+  .rd-hero-wordmark,
+  .rd-hero-reflection {
+    width: 55%;
+  }
+}
+
+.rd-spin-stage {
+  perspective: 1200px;
+}
+
+/* Lazy-susan spin around the vertical center axis. */
+.rd-spin {
+  transform-style: preserve-3d;
+  backface-visibility: visible;
+  animation: rd-spin var(--spin-duration) linear infinite;
+}
+
+.rd-spin img {
+  display: block;
+  width: 100%;
+  height: auto;
+  backface-visibility: visible;
+}
+
+.rd-glow-pulse {
+  animation: rd-glow-pulse 6s ease-in-out infinite;
+}
+
+@keyframes rd-spin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+@keyframes rd-glow-pulse {
   0%,
   100% {
     filter: brightness(1);
   }
   50% {
-    filter: brightness(1.14);
+    filter: brightness(1.18);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rd-hero-art {
+  .rd-spin,
+  .rd-glow-pulse {
     animation: none;
   }
 }
