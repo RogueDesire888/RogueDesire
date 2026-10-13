@@ -73,7 +73,7 @@ CTAs: Enter the Next Chapter, Read the Manifesto, Enter Chapter 001, Enter the A
 
 Rule: the wordmark carries the chaos, the layout carries the sophistication.
 
-Wordmark direction: jagged, hand-drawn, brush-like lettering rendered as a glowing neon outline with laser beams and a wireframe grid horizon behind it. The real wordmark will arrive as `public/brand/wordmark.svg`. Until then, `components/brand/Wordmark.tsx` renders a placeholder. That component is the only place the wordmark is defined.
+Wordmark direction: jagged, hand-drawn, brush-like lettering rendered as a glowing neon outline with laser beams and a wireframe grid horizon behind it. The wordmark asset is `public/brand/wordmark.webp`. `components/brand/Wordmark.tsx` is the swap point for small uses (nav, footer); the home hero uses the same asset with its spin treatment.
 
 Tokens (CSS variables in globals.css, mapped into Tailwind):
 - --rd-black #030303 (base), --rd-charcoal #0B0B0F (elevated surfaces)
@@ -92,7 +92,7 @@ Chapter accents:
 Type:
 - Hanken Grotesk: body and UI. Clean, Swiss, generous spacing, line length under 75ch.
 - Syncopate: chapter titles only (ASCENSION, ECLIPSE), uppercase, wide tracking, optional neon glow.
-- Wordmark: SVG asset (placeholder font until delivered).
+- Wordmark: `public/brand/wordmark.webp` (transparent, trimmed, 2193x1373), rendered only via `components/brand/Wordmark.tsx` for small uses. No placeholder font.
 
 Motion and atmosphere:
 - Black void, grain, fog, laser grid, violet glow. Glow is seasoning, not the system.
@@ -155,4 +155,12 @@ Preview URL (Task 1): https://rogue-desire-rcggp4d4a-celestialsoundrecords-9938s
 Vercel project: rogue-desire (team celestialsoundrecords-9938s-projects). Deployments are behind Vercel deployment protection.
 Git integration: connected to RogueDesire888/RogueDesire. Every push to main auto-deploys to the Production environment (vercel.app URL only, no custom domain yet).
 Latest deployment (Task 2): https://rogue-desire-q52zsbqjz-celestialsoundrecords-9938s-projects.vercel.app
-Notes: CSS Modules do not work with the scaffolded Turbopack Tailwind rule in next.config.ts; use plain prefixed CSS files (see src/components/atmosphere/laser-grid.css). Tailwind font utilities: font-sans, font-title, font-mark. Content imports use the `@content/*` alias; render optional fields only through `isPublic()` from src/lib/content.ts.
+Home hero (src/app/page.tsx + src/components/home/hero.css):
+- Layer 1: `public/brand/hero-scene.webp` (lasers, grid floor, mountains, no text), edges masked into black. Mobile: object-contain, no crop. Desktop: object-cover anchored at 50% 68%.
+- Layer 2: wordmark centered on the laser origin (50% / 68% of the scene), 85% width mobile, 55% desktop, spinning rotateY 0 to 360 inside a 1200px perspective stage, back shows mirrored. Glow pulse (brightness, 6s) on the wordmark only.
+- Reflection: flipped, blurred, 15% opacity copy spinning in sync, faded with a mask, aria-hidden.
+- Spin speed: `--spin-duration` (default 14s) in `:root` in globals.css. That is the only place to change it.
+- Reduced motion: no spin, no pulse, wordmark static facing forward.
+- Source PNGs (3840x1648) are kept out of the repo; WebPs were generated with sharp at max 2560px.
+
+Notes: CSS Modules do not work with the scaffolded Turbopack Tailwind rule in next.config.ts; use plain prefixed CSS files (see src/components/atmosphere/laser-grid.css). Tailwind font utilities: font-sans, font-title. Content imports use the `@content/*` alias; render optional fields only through `isPublic()` from src/lib/content.ts.
