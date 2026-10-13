@@ -1,37 +1,52 @@
 /* Home hero: scene background + spinning wordmark + floor reflection.
    Spin speed: --spin-duration in globals.css. */
 
-/* Scene edges dissolve into --rd-black on all four sides. */
+/* Hero box. Mobile: tall enough for the spinning wordmark above the contained
+   scene. Desktop: min(88vh, 1100px) filled by the scene (cover, bottom-anchored). */
+.rd-hero {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  aspect-ratio: 1.39;
+  /* Distance from hero bottom to the wordmark base, and wordmark width. */
+  --wm-base: 14%;
+  --wm-width: 85%;
+}
+
+/* Scene edges dissolve into --rd-black: soft top and sides, short bottom fade
+   so the grid floor stays visible. */
 .rd-hero-scene {
   -webkit-mask-image:
     linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%),
-    linear-gradient(to bottom, transparent 0%, #000 12%, #000 82%, transparent 100%);
+    linear-gradient(to bottom, transparent 0%, #000 12%, #000 93%, transparent 100%);
   -webkit-mask-composite: source-in;
   mask-image:
     linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%),
-    linear-gradient(to bottom, transparent 0%, #000 12%, #000 82%, transparent 100%);
+    linear-gradient(to bottom, transparent 0%, #000 12%, #000 93%, transparent 100%);
   mask-composite: intersect;
 }
 
-/* Laser origin in the scene artwork sits at 50% / 68%. */
+/* Wordmark stands on the floor: base just below the horizon. */
 .rd-hero-wordmark,
 .rd-hero-reflection {
   position: absolute;
   left: 50%;
-  top: 68%;
-  width: 85%;
+  width: var(--wm-width);
 }
 
 .rd-hero-wordmark {
-  transform: translate(-50%, -50%);
+  bottom: var(--wm-base);
+  transform: translateX(-50%);
 }
 
+/* Reflection starts at the wordmark base and fades out on the floor. */
 .rd-hero-reflection {
-  transform: translate(-50%, 44%);
+  top: calc(100% - var(--wm-base));
+  transform: translateX(-50%);
   opacity: 0.15;
   filter: blur(3px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 55%);
-  mask-image: linear-gradient(to bottom, #000 0%, transparent 55%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 45%);
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 45%);
 }
 
 .rd-hero-flip {
@@ -39,9 +54,11 @@
 }
 
 @media (min-width: 768px) {
-  .rd-hero-wordmark,
-  .rd-hero-reflection {
-    width: 55%;
+  .rd-hero {
+    aspect-ratio: auto;
+    height: min(88vh, 1100px);
+    --wm-base: 21%;
+    --wm-width: 46%;
   }
 }
 
