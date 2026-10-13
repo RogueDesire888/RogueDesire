@@ -1,7 +1,7 @@
 # ROGUE DESIRE: CLAUDE CODE CONTEXT
 
 Read this file at the start of every session. It is the condensed source of truth.
-`docs/handoff.md` is the full 130KB brand handoff. NEVER read it in full. If you need a specific section (page copy, manifesto, chapter details), grep for the heading and read only that section.
+The full brand handoff (docs/handoff.md) is not in the repo. Page copy, manifesto text, and chapter details come from task prompts.
 
 ## Project
 
@@ -11,7 +11,7 @@ Read this file at the start of every session. It is the condensed source of trut
 - Separate legal entity. Not affiliated with Vertex Data LLC or any other project. Never reference other projects.
 - Instagram: @roguedesireofficial
 - Repo: github.com/RogueDesire888/RogueDesire (branch: main). GitHub account: RogueDesire888.
-- Hosting: Vercel (own project, separate account/team). Domain roguedesire.com is on GoDaddy, cutover happens last.
+- Hosting: Vercel project `rogue-desire` on account celestialsoundrecords-9938 (team "celestialsoundrecords-9938's projects"). This is the correct dedicated Rogue Desire account. Domain roguedesire.com is on GoDaddy, cutover happens last.
 
 ## Stack
 
@@ -23,7 +23,7 @@ Read this file at the start of every session. It is the condensed source of trut
 ## Working rules
 
 - Do and commit everything you can. Only stop for steps that need a human login (Vercel, Supabase, Resend, Cloudflare, GoDaddy).
-- Keep each task under about 20k tokens: no reading node_modules, no reading docs/handoff.md in full, no unnecessary dependencies.
+- Keep each task under about 20k tokens: no reading node_modules, no unnecessary dependencies.
 - Small logical commits, push to main after each task.
 - `npm run build` and `npm run lint:brand` must pass before every push.
 - Update the Task status section at the bottom of this file at the end of each task.
@@ -111,7 +111,7 @@ Full overlay menu: Home, Manifesto, Chapters, Archive, Transmissions, Artifacts,
 
 Routes:
 - `/` Home
-- `/manifesto` (short manifesto from handoff Section 2; the long Appendix D version becomes Transmission 000)
+- `/manifesto` (short manifesto; the long version becomes Transmission 000)
 - `/chapters` and `/chapters/ascension`
 - `/archive` (designed empty state until Chapter 001 happens; later `/archive/RD-Y1-CH001-ASC`)
 - `/transmissions` and `/transmissions/[slug]` (MDX)
