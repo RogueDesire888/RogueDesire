@@ -156,9 +156,9 @@ Vercel project: rogue-desire (team celestialsoundrecords-9938s-projects). Deploy
 Git integration: connected to RogueDesire888/RogueDesire. Every push to main auto-deploys to the Production environment (vercel.app URL only, no custom domain yet).
 Latest deployment (Task 2): https://rogue-desire-q52zsbqjz-celestialsoundrecords-9938s-projects.vercel.app
 Home hero (src/app/page.tsx + src/components/home/hero.css):
-- Layer 1: `public/brand/hero-scene.webp` (lasers, grid floor, mountains, no text), edges masked into black. Mobile: object-contain, no crop. Desktop: object-cover anchored at 50% 68%.
-- Layer 2: wordmark centered on the laser origin (50% / 68% of the scene), 85% width mobile, 55% desktop, spinning rotateY 0 to 360 inside a 1200px perspective stage, back shows mirrored. Glow pulse (brightness, 6s) on the wordmark only.
-- Reflection: flipped, blurred, 15% opacity copy spinning in sync, faded with a mask, aria-hidden.
+- Hero box (`.rd-hero`): desktop height min(88vh, 1100px), scene object-cover anchored bottom center; mobile aspect-ratio 1.39 with the scene contained (no crop) at the bottom. Top and side edges fade into black; short bottom fade keeps the grid floor visible.
+- Wordmark stands on the floor: base at 79% of hero height on desktop (86% mobile), width 46% desktop / 85% mobile, via `--wm-base` and `--wm-width` on `.rd-hero`. Spins rotateY 0 to 360 around its own vertical center inside a 1200px perspective stage; back shows mirrored. Glow pulse (brightness, 6s) on the wordmark only.
+- Reflection: flipped, blurred, 15% opacity copy starting at the wordmark base, spinning in sync, faded with a mask, aria-hidden, clipped inside the hero.
 - Spin speed: `--spin-duration` (default 14s) in `:root` in globals.css. That is the only place to change it.
 - Reduced motion: no spin, no pulse, wordmark static facing forward.
 - Source PNGs (3840x1648) are kept out of the repo; WebPs were generated with sharp at max 2560px.
