@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CharmSpinner } from "@/components/artifacts/CharmSpinner";
 import { FadeIn, FadeInStagger, ScrubWords } from "@/components/motion/primitives";
 import { ArtifactCard } from "@/components/objects/ArtifactCard";
 import { SignalCta } from "@/components/ui/SignalCta";
@@ -48,24 +49,32 @@ export default function ArtifactsPage() {
       </section>
 
       {artifact && chapter && (
-        <section data-cue="fog" aria-labelledby="artifact-title" className={section}>
-          <div className="grid items-center gap-14 md:grid-cols-2 md:gap-20">
-            <div className="flex justify-center md:justify-start">
-              <div className="w-[min(78vw,340px)]">
-                <ArtifactCard title={chapter.title} line={artifact.line} code={artifact.code} />
-              </div>
-            </div>
-            <div data-fog-cap className="flex flex-col gap-4">
+        <section data-cue="lasers" aria-labelledby="artifact-title" className={section}>
+          <div className="flex flex-col items-center text-center">
+            <CharmSpinner />
+            <div data-fog-cap className="mt-10 flex flex-col items-center gap-3">
               <h2 id="artifact-title" className={heading}>
                 {artifact.name}
               </h2>
               {isPublic(artifact.subtitle) && <p className="text-xl text-rd-white md:text-2xl">{artifact.subtitle}</p>}
+              <p className="text-sm text-rd-chrome">Concept design. Production details to be confirmed.</p>
+            </div>
+          </div>
+
+          <div className="mt-24 grid items-center gap-14 md:mt-36 md:grid-cols-2 md:gap-20">
+            <figure className="flex flex-col items-center gap-5 md:items-start">
+              <div className="w-[min(78vw,340px)]">
+                <ArtifactCard title={chapter.title} line={artifact.line} code={artifact.code} />
+              </div>
+              <figcaption className="text-sm text-rd-chrome">The card it comes with.</figcaption>
+            </figure>
+            <div data-fog-cap className="flex flex-col gap-4">
               {isPublic(artifact.lore) && (
-                <FadeIn className="mt-4">
+                <FadeIn>
                   <p className={body}>{artifact.lore}</p>
                 </FadeIn>
               )}
-              <p className="mt-4 text-sm text-rd-chrome">Status: {STATUS_LABEL[artifact.status]}</p>
+              <p className="text-sm text-rd-chrome">Status: {STATUS_LABEL[artifact.status]}</p>
             </div>
           </div>
         </section>
