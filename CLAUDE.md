@@ -7,7 +7,7 @@ The full brand handoff (docs/handoff.md) is not in the repo. Page copy, manifest
 
 - Brand: Rogue Desire. Line: "Architects of Temporary Realities."
 - What it is: a chapter-based electronic music and nightlife experience brand. Each night is a fully designed world (sound, light, venue, people), the printed flyer is a collectible Artifact, and photos, films, and an annual Yearbook preserve it.
-- Launch city: Greenville, SC (not public yet, controlled by `config/site.ts`).
+- Launch city: Greenville, SC (not public yet, controlled by `src/config/facts.ts`, server-only).
 - Separate legal entity. Not affiliated with Vertex Data LLC or any other project. Never reference other projects.
 - Instagram: @roguedesireofficial
 - Repo: github.com/RogueDesire888/RogueDesire (branch: main). GitHub account: RogueDesire888.
@@ -177,14 +177,14 @@ Legal entity name, public contact email, city reveal timing, venue, date, hours,
   - [x] 8B. Transmissions and Archive
   - [ ] 8C. Collective (deferred until real people are confirmed; real people only, never placeholders)
 - [x] 9. SEO: metadata, OG images, sitemap, robots, JSON-LD, 404 (privacy page stays on the Task 11 checklist)
-- [ ] 10. QA: links, forms, accessibility, performance, mobile
+- [x] 10. QA: links, forms, accessibility, performance, mobile (see docs/qa-report.md; scripts in scripts/qa/)
 - [ ] 11. Domain cutover
 
 Before domain cutover (Task 11). Task 11 must not proceed until every item is checked:
 - [ ] Connect Supabase in Vercel (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, Postgres URL in all environments) and run `supabase/migrations/001_circle.sql`.
 - [ ] Move Circle rate limiting from memory to the database (count circle_entries by ip_hash in the last hour).
 - [ ] Set CIRCLE_FORM_SECRET and CIRCLE_IP_SALT in Vercel for all environments.
-- [ ] Build `/privacy` (needs `legalName` and `contactEmail` in `src/config/site.ts`); the Circle form links it automatically once live.
+- [ ] Build `/privacy` (needs `legalName` and `contactEmail` in `src/config/facts.ts`); the Circle form links it automatically once live.
 
 Preview URL (Task 1): https://rogue-desire-rcggp4d4a-celestialsoundrecords-9938s-projects.vercel.app
 Vercel project: rogue-desire (team celestialsoundrecords-9938s-projects). Deployments are behind Vercel deployment protection.
@@ -216,3 +216,5 @@ Archive (Task 8B): `/archive` hero, the Chapter 001 vault (rotating seal ring, s
 SEO (Task 9): every page builds metadata with `pageMeta()` in `src/lib/seo.ts` (title, description of 150 characters or less from page copy, canonical, Open Graph, Twitter summary_large_image). Share images are `opengraph-image.tsx` per route via `renderOg()` in `src/lib/og.tsx`; Satori needs static fonts, so it uses `scripts/fonts/GrenzeGotisch-SemiBold.ttf` and `HankenGrotesk-Regular.ttf` (from Google Fonts), while the flyer script uses the variable TTFs. Keep file paths in og.tsx literal or the bundler traces the whole project. Icons: `node scripts/make-icons.mjs` (idol crown and head from the charm front). Indexing guard: `src/proxy.ts` sends `X-Robots-Tag: noindex, nofollow` and `robots.ts` disallows everything unless VERCEL_ENV is production AND the host is roguedesire.com (or www); every *.vercel.app URL stays out of search. `sitemap.ts` reads live routes from nav.ts plus transmissions. Organization JSON-LD is on the home page only. Add Event schema (and anything with date, venue, city, or price) only once the Chapter 001 date and venue are confirmed.
 
 Notes: CSS Modules do not work with the scaffolded Turbopack Tailwind rule in next.config.ts; use plain prefixed CSS files (see src/components/atmosphere/laser-grid.css). Tailwind font utilities: font-sans, font-display (defined with @utility in globals.css). Content imports use the `@content/*` alias; render optional fields only through `isPublic()` from src/lib/content.ts.
+
+Facts split (Task 10): `src/config/site.ts` is client-safe and imported by client components. Anything unconfirmed or private (city, cityPublic, legalName, contactEmail) lives in `src/config/facts.ts`, which imports `server-only` so a client import fails the build. QA (Task 10): `scripts/qa/` holds the crawl, Playwright browser matrix, axe/keyboard/readability runner, asset sizes and Lighthouse script; run against a production build on port 3001 (or `QA_BASE`), results go to `QA_OUT`. Report: `docs/qa-report.md`.
