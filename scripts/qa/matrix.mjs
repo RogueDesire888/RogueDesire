@@ -19,7 +19,10 @@ for (const size of SIZES) {
     page.on("response", (r) => { if (r.status() >= 400) failed.push(`${r.status()} ${r.url().replace(BASE, "")}`.slice(0, 160)); });
     try {
       await page.goto(BASE + path, { waitUntil: "load", timeout: 45000 });
-      await sleep(1200);
+      // Motion starts after first paint (idle callback, or a 1.2s timer where
+      // requestIdleCallback is missing, as in WebKit), so wait for the rig.
+      await page.waitForFunction(() => [...document.querySelectorAll(".rd-rig")].some((e) => e.dataset.state === "live"), null, { timeout: 6000 }).catch(() => {});
+      await sleep(600);
       await scrollThrough(page);
       const r = await page.evaluate(async () => {
         const fam = (sel) => { const e = document.querySelector(sel); return e ? getComputedStyle(e).fontFamily : null; };
