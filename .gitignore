@@ -43,3 +43,7 @@ next-env.d.ts
 # vercel
 .vercel
 .env*
+
+# Large flyer files stay local (see CLAUDE.md)
+/art/
+/public/artifacts/ch001-flyer.png
