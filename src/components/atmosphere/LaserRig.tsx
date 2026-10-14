@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { BURST_MS, getFogBursts, usePulse } from "@/lib/pulse";
+import { BURST_MS, getDropState, getFogBursts, usePulse } from "@/lib/pulse";
 import { LaserGrid } from "./LaserGrid";
 import "./laser-rig.css";
 
@@ -14,9 +14,9 @@ const VERT = `attribute vec2 aPos; void main() { gl_Position = vec4(aPos, 0.0, 1
 const FRAG = `
 precision mediump float;
 uniform vec2 uRes, uPointer, uPointerVel;
-uniform float uTime, uPhase, uBeat, uCount, uHorizon, uEnergy, uOctaves, uBeamAmt, uFogAmt, uPointerOn;
+uniform float uTime, uPhase, uBeat, uCount, uHorizon, uEnergy, uOctaves, uBeamAmt, uFogAmt, uPointerOn, uExplode, uFlood;
 uniform vec3 uAccent, uGlow;
-uniform vec4 uBurst0, uBurst1; // x, age (s), intensity, size
+uniform vec4 uBurst0, uBurst1, uBurst2; // x, age (s), intensity, size
 uniform vec4 uCap0, uCap1, uCap2, uCap3; // uv rects x0, y0, x1, y1
 
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -66,7 +66,7 @@ void main() {
   vec2 q = vec2(fbm(fp * 1.4 + vec2(t * 0.04, 0.0)), fbm(fp * 1.4 + vec2(5.2, 1.3) + vec2(0.0, t * 0.03)));
   float n = fbm(fp * vec2(1.6, 2.4) + 1.8 * q + vec2(t * 0.06, -t * 0.015));
   float fog = smoothstep(0.12, 0.8, n) * exp(-uv.y * 2.2) * (0.9 + 0.35 * uEnergy);
-  fog += burst(uBurst0, p, aspect) + burst(uBurst1, p, aspect);
+  fog += burst(uBurst0, p, aspect) + burst(uBurst1, p, aspect) + burst(uBurst2, p, aspect);
   fog *= 1.0 - near * 0.85;
   fog = clamp(fog * uFogAmt, 0.0, 1.0);
   float cap = max(max(capMask(uv, uCap0), capMask(uv, uCap1)), max(capMask(uv, uCap2), capMask(uv, uCap3)));
@@ -82,9 +82,10 @@ void main() {
     float on = clamp(uCount - fi, 0.0, 1.0);
     if (on <= 0.0) continue;
     float o = mod(fi, 3.0);
-    vec2 origin = vec2((0.2 + 0.3 * o) * aspect, uHorizon);
-    float spread = mix(-1.15, 1.15, fract(fi * 0.618 + 0.13));
-    float ang = spread + 0.35 * sin(uPhase * (0.6 + 0.25 * o) + fi * 1.7);
+    // Explosion: origins pull to screen center and beams fan out full circle.
+    vec2 origin = mix(vec2((0.2 + 0.3 * o) * aspect, uHorizon), vec2(0.5 * aspect, 0.5), uExplode);
+    float spread = mix(mix(-1.15, 1.15, fract(fi * 0.618 + 0.13)), (fract(fi * 0.618 + 0.13) * 2.0 - 1.0) * 3.1416, uExplode);
+    float ang = spread + 0.35 * sin(uPhase * (0.6 + 0.25 * o) + fi * 1.7) + uExplode * 0.9 * sin(uTime * 1.7 + fi);
     vec2 dir = vec2(sin(ang), cos(ang));
     vec2 d = p - origin;
     float s = dot(d, dir);
@@ -101,6 +102,10 @@ void main() {
   col += beams * (0.45 + 1.6 * fog) * uBeamAmt * beamText;
   col += uAccent * bleed * fog * 0.6 * uBeamAmt * beamText;
   col *= 1.0 + uBeat * 0.15;
+  // Violet flood: soft radial accent bloom from center (max 0.35).
+  vec2 fc = uv - 0.5;
+  fc.x *= aspect;
+  col += uAccent * uFlood * exp(-dot(fc, fc) * 2.2);
   gl_FragColor = vec4(col, 1.0);
 }`;
 
@@ -115,6 +120,8 @@ const TIERS = [
 /** Per atmosphere cue: beam and fog strength. The fog field itself never stops. */
 const CUE_MIX: Record<string, [beams: number, fog: number]> = {
   hero: [1, 0.8],
+  build: [1, 0.65],
+  breath: [0, 0.12],
   lasers: [1, 0.45],
   fog: [0.12, 0.6],
   flare: [0.2, 0.5],
@@ -175,7 +182,7 @@ export function LaserRig({ className = "", fallback = "grid" }: { className?: st
     const u = (name: string) => gl.getUniformLocation(program, name);
     const U = Object.fromEntries(
       ["uRes", "uTime", "uPhase", "uBeat", "uCount", "uHorizon", "uEnergy", "uOctaves", "uBeamAmt", "uFogAmt",
-        "uPointer", "uPointerVel", "uPointerOn", "uBurst0", "uBurst1", "uCap0", "uCap1", "uCap2", "uCap3"].map((n) => [n, u(n)]),
+        "uPointer", "uPointerVel", "uPointerOn", "uBurst0", "uBurst1", "uBurst2", "uExplode", "uFlood", "uCap0", "uCap1", "uCap2", "uCap3"].map((n) => [n, u(n)]),
     );
 
     const styles = getComputedStyle(root);
@@ -285,7 +292,7 @@ export function LaserRig({ className = "", fallback = "grid" }: { className?: st
       const rawDt = now - last;
       const dt = Math.min(0.1, rawDt / 1000);
       last = now;
-      const { beat, energy } = pulse.current;
+      const { beat, energy, intensity } = pulse.current;
 
       // Adaptive quality, sampled once per second (ignoring resumes after a pause).
       if (rawDt < 250) {
@@ -326,20 +333,30 @@ export function LaserRig({ className = "", fallback = "grid" }: { className?: st
 
       const bursts = getFogBursts();
       const size = mobile ? 0.5 : 1;
-      [U.uBurst0, U.uBurst1].forEach((loc, i) => {
+      [U.uBurst0, U.uBurst1, U.uBurst2].forEach((loc, i) => {
         const b = bursts[bursts.length - 1 - i];
         const age = b ? (now - b.start) / 1000 : 0;
         gl.uniform4f(loc, b ? b.x : 0, age, b && age * 1000 < BURST_MS ? b.intensity : 0, size);
       });
 
-      phase += dt * (0.25 + energy * 1.2);
+      // Drop events: explosion (~1.5s) and flood (300ms rise, 1.2s decay).
+      const dropState = getDropState();
+      const ex = dropState.explosionAt === null ? 99 : (now - dropState.explosionAt) / 1000;
+      const explode = ex < 0.15 ? ex / 0.15 : Math.max(0, 1 - (ex - 0.15) / 1.35) ** 2;
+      const fl = dropState.floodAt === null ? 99 : (now - dropState.floodAt) / 1000;
+      const flood = fl < 0.3 ? (fl / 0.3) * 0.35 : 0.35 * Math.exp(-(fl - 0.3) / 0.4);
+      gl.uniform1f(U.uExplode, explode);
+      gl.uniform1f(U.uFlood, fl < 5 ? flood : 0);
+
+      phase += dt * (0.25 + energy * 1.2) * (0.3 + 0.7 * intensity) + dt * explode * 2;
       gl.uniform1f(U.uTime, (now - start) / 1000);
       gl.uniform1f(U.uPhase, phase);
       gl.uniform1f(U.uBeat, beat);
       gl.uniform1f(U.uEnergy, energy);
-      gl.uniform1f(U.uCount, mobile ? 4 + energy * 2 : 6 + energy * 4);
-      gl.uniform1f(U.uBeamAmt, beamAmt);
-      gl.uniform1f(U.uFogAmt, fogAmt);
+      const count = mobile ? 4 + energy * 2 : 6 + energy * 4;
+      gl.uniform1f(U.uCount, count + (10 - count) * explode);
+      gl.uniform1f(U.uBeamAmt, Math.max(beamAmt * intensity, explode));
+      gl.uniform1f(U.uFogAmt, fogAmt * (0.5 + 0.5 * intensity));
       gl.uniform2f(U.uPointer, pointer.x, pointer.y);
       gl.uniform2f(U.uPointerVel, Math.max(-2, Math.min(2, pointer.vx)), Math.max(-2, Math.min(2, pointer.vy)));
       gl.uniform1f(U.uPointerOn, pointerOn);

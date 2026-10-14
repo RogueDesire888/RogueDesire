@@ -53,6 +53,10 @@ export function scheduleRefresh() {
   refreshQueued = true;
   requestAnimationFrame(() => {
     refreshQueued = false;
+    // Triggers can be created out of page order (the layout's Atmosphere may
+    // hydrate before the page's pins). Sorting by position before refreshing
+    // makes every trigger below a pin include that pin's spacing.
+    ScrollTrigger.sort();
     ScrollTrigger.refresh();
   });
 }

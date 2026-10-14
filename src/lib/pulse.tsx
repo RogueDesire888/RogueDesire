@@ -13,9 +13,9 @@ import { ScrollTrigger } from "@/lib/motion";
  * CSS vars are written at ~30Hz and only when their 2-decimal value changes.
  * Reduced motion: no loop, every var stays 0 (dir 1). Hidden tabs pause with rAF.
  */
-export type PulseState = { beat: number; bar: number; energy: number; dir: 1 | -1 };
+export type PulseState = { beat: number; bar: number; energy: number; dir: 1 | -1; intensity: number };
 
-const state: PulseState = { beat: 0, bar: 0, energy: 0, dir: 1 };
+const state: PulseState = { beat: 0, bar: 0, energy: 0, dir: 1, intensity: 1 };
 const handle = { current: state } as const;
 
 /** Live pulse values for canvas/JS consumers. Reading it never re-renders React. */
@@ -25,11 +25,13 @@ export function usePulse(): { readonly current: PulseState } {
 
 /**
  * Fog machine bursts. A burst is a plume rising from a point on the bottom
- * edge (x in 0..1), living BURST_MS. At most 2 are active; the oldest drops.
+ * edge (x in 0..1), living BURST_MS. At most 3 are active (the drop fires
+ * three); the oldest drops. Routine bursts never overlap more than 2.
  * The pulse loop fires one on load and one every 16 bars.
  */
 export type FogBurst = { x: number; start: number; intensity: number };
 export const BURST_MS = 8000;
+const MAX_ACTIVE_BURSTS = 3;
 const bursts: FogBurst[] = [];
 
 const prefersReduced = () =>
@@ -40,7 +42,7 @@ export function triggerFogBurst(intensity = 1) {
   if (prefersReduced()) return;
   const now = performance.now();
   for (let i = bursts.length - 1; i >= 0; i--) if (now - bursts[i].start > BURST_MS) bursts.splice(i, 1);
-  if (bursts.length >= 2) bursts.shift();
+  if (bursts.length >= MAX_ACTIVE_BURSTS) bursts.shift();
   bursts.push({ x: 0.1 + Math.random() * 0.8, start: now, intensity: Math.min(1.5, Math.max(0, intensity)) });
 }
 
@@ -50,6 +52,66 @@ export function getFogBursts(): readonly FogBurst[] {
 }
 
 const BARS_PER_BURST = 16;
+
+/**
+ * Set intensity (0..1): a section-driven multiplier on beam strength, sweep
+ * speed, fog density, and beat amplitude. Smoothed in the pulse loop. Pages
+ * start at 1; the Atmosphere resets it on every route change.
+ */
+let intensityTarget = 1;
+export function setIntensity(value: number) {
+  intensityTarget = Math.min(1, Math.max(0, value));
+}
+
+let beatMsCurrent = 60000 / 128;
+/** Milliseconds until the next downbeat (start of the next 4-beat bar). */
+export function msToNextDownbeat(after = performance.now()): number {
+  const bar = beatMsCurrent * 4;
+  return bar - (after % bar);
+}
+export function barMs(): number {
+  return beatMsCurrent * 4;
+}
+
+/** Point the atmosphere at a cue directly (used by the drop sequence). */
+export function setAtmosphereCue(cue: string) {
+  const layer = document.querySelector<HTMLElement>(".rd-atmo");
+  if (layer) layer.dataset.activeCue = cue;
+}
+
+/**
+ * The drop: three fog plumes across the bottom edge (~150ms apart), a radial
+ * laser explosion (~1.5s), and a violet flood (to 35% over 300ms, decaying over
+ * 1.2s), then intensity 1. Fires at most once per page load; the flood never
+ * repeats within 10s. Reduced motion: no-op.
+ */
+export type DropState = { explosionAt: number | null; floodAt: number | null };
+const drop: DropState = { explosionAt: null, floodAt: null };
+let dropFired = false;
+const FLOOD_COOLDOWN_MS = 10000;
+
+export function getDropState(): Readonly<DropState> {
+  return drop;
+}
+
+export function triggerDrop(): boolean {
+  if (dropFired || prefersReduced()) return false;
+  dropFired = true;
+  const now = performance.now();
+  [0, 150, 300].forEach((delay, i) =>
+    window.setTimeout(() => {
+      const before = bursts.length;
+      triggerFogBurst(1);
+      // Spread the three plumes across the bottom edge.
+      if (bursts.length >= before) bursts[bursts.length - 1].x = 0.2 + i * 0.3;
+    }, delay),
+  );
+  drop.explosionAt = now;
+  if (drop.floodAt === null || now - drop.floodAt > FLOOD_COOLDOWN_MS) drop.floodAt = now;
+  intensityTarget = 1;
+  state.intensity = 1;
+  return true;
+}
 
 /** Guardrail: never more than 3 pulses per second. */
 const MAX_BPM = 180;
@@ -61,6 +123,7 @@ export function PulseProvider({ children }: { children?: ReactNode }) {
     const root = document.documentElement;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     const beatMs = 60000 / Math.min(site.bpm, MAX_BPM);
+    beatMsCurrent = beatMs;
     let raf = 0;
     let last = 0;
     let velocity = 0;
@@ -95,7 +158,8 @@ export function PulseProvider({ children }: { children?: ReactNode }) {
     const tick = (now: number) => {
       const dt = Math.min(100, now - last);
       last = now;
-      state.beat = Math.exp(-((now % beatMs) / beatMs) * 5);
+      state.intensity += (intensityTarget - state.intensity) * (1 - Math.exp(-dt / 300));
+      state.beat = Math.exp(-((now % beatMs) / beatMs) * 5) * state.intensity;
       state.bar = (now % (beatMs * 4)) / (beatMs * 4);
       const barIndex = Math.floor(now / (beatMs * 4));
       if (barIndex !== lastBar) {
