@@ -171,11 +171,17 @@ Legal entity name, public contact email, city reveal timing, venue, date, hours,
 - [x] 4. Home
 - [x] 5. Manifesto
 - [x] 6. Chapters index + Chapter 001 with chapter theming
-- [ ] 7. Enter the Circle form (UI and server action done, unlisted; backend waits on Supabase + /privacy)
+- [x] 7. Enter the Circle form (UI and server action; storage waits on the Task 11 checklist)
 - [ ] 8. Artifacts, Yearbook, Transmissions, Archive, Collective
 - [ ] 9. SEO: metadata, OG images, sitemap, robots, JSON-LD, privacy page, 404
 - [ ] 10. QA: links, forms, accessibility, performance, mobile
 - [ ] 11. Domain cutover
+
+Before domain cutover (Task 11). Task 11 must not proceed until every item is checked:
+- [ ] Connect Supabase in Vercel (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, Postgres URL in all environments) and run `supabase/migrations/001_circle.sql`.
+- [ ] Move Circle rate limiting from memory to the database (count circle_entries by ip_hash in the last hour).
+- [ ] Set CIRCLE_FORM_SECRET and CIRCLE_IP_SALT in Vercel for all environments.
+- [ ] Build `/privacy` (needs `legalName` and `contactEmail` in `src/config/site.ts`); the Circle form links it automatically once live.
 
 Preview URL (Task 1): https://rogue-desire-rcggp4d4a-celestialsoundrecords-9938s-projects.vercel.app
 Vercel project: rogue-desire (team celestialsoundrecords-9938s-projects). Deployments are behind Vercel deployment protection.
@@ -197,10 +203,6 @@ Manifesto (Task 5): text lives in `content/manifesto.ts` as typed blocks (openin
 
 Chapters (Task 6): `/chapters` (Year One index: symbols, Chapter 001 feature, concept listing via `getConceptListing()`) and `/chapters/ascension` (hero, description, meaning BeatWords, element and palette, The night, sound, Artifact 001, style direction marquee, guest code, access). Chapter page content lives on the chapter entry (opening, closingLine, meaning, elements, soundDirection {line, genres}, styleDirection {lines, words}, guestCodeIntro, guestCode, nightArc); never publish times for night phases. `NightArc` (`src/components/chapter/NightArc.tsx`) plays the arc on the atmosphere (intensity 0.2 / 0.5 / 1.0 / 0.3, fog / lasers / lasers / fog, one burst at Peak); desktop pins ~200vh. `Disclosure` (`src/components/chapter/Disclosure.tsx`) is the shared disclosure rows component (home dossier and chapter access). Frequencies carry a `chapter` slug; `getFrequencies(slug, role)`. Unlisted live routes (`unlisted: true` in nav.ts) are linkable via isLive() but not shown in nav, menu, or footer.
 
-Enter the Circle (Task 7, built, not live): `/circle` is reachable by URL but `live: false, unlisted: true` and noindex. Form: `src/components/circle/CircleForm.tsx`; server action `src/app/circle/actions.ts` (Zod, honeypot `website`, signed 2.5s "opened" token, 5 per IP per hour via salted hash, in-memory for now). Storage goes through `getCircleStore()` in `src/lib/circle-store.ts` (Supabase REST, server-only); with no store it returns "The Circle opens soon." Without JavaScript the action answers with a 303 to `/circle?status=` or `?error=&f=` (codes only, never typed values); with JavaScript it returns inline state. Dev-only preview: `/circle?preview=success`.
-Before the Circle goes live:
-- (a) Connect Supabase in Vercel (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, Postgres URL in all environments) and run `supabase/migrations/001_circle.sql`. Then move rate limiting to the database (count by ip_hash) and set CIRCLE_FORM_SECRET and CIRCLE_IP_SALT.
-- (b) Build `/privacy`, which needs `legalName` and `contactEmail` set in `src/config/site.ts`. The form links Privacy automatically once /privacy is live.
-- Then set /circle `live: true`, remove `unlisted` and the noindex.
+Enter the Circle (Task 7): `/circle` is live in nav for review, but entries are not stored yet. Form: `src/components/circle/CircleForm.tsx`; server action `src/app/circle/actions.ts` (Zod, honeypot `website`, signed 2.5s "opened" token, 5 per IP per hour via salted hash, in-memory for now). Storage goes through `getCircleStore()` in `src/lib/circle-store.ts` (Supabase REST, server-only); with no store a valid entry shows "The Circle opens soon." Without JavaScript the action answers with a 303 to `/circle?status=` or `?error=&f=` (codes only, never typed values, links unsigned by decision); with JavaScript it returns inline state. Dev-only preview: `/circle?preview=success`.
 
 Notes: CSS Modules do not work with the scaffolded Turbopack Tailwind rule in next.config.ts; use plain prefixed CSS files (see src/components/atmosphere/laser-grid.css). Tailwind font utilities: font-sans, font-display (defined with @utility in globals.css). Content imports use the `@content/*` alias; render optional fields only through `isPublic()` from src/lib/content.ts.
