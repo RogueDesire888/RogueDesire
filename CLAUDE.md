@@ -143,7 +143,7 @@ Legal entity name, public contact email, city reveal timing, venue, date, hours,
 - [x] 2. Content layer: Zod schemas, chapter/artifact/transmission files, null gating
 - [x] 3. Navbar + overlay menu, Footer, buttons, section primitives
 - [x] 4. Home
-- [ ] 5. Manifesto
+- [x] 5. Manifesto
 - [ ] 6. Chapters index + Chapter 001 with chapter theming
 - [ ] 7. Enter the Circle form (UI first, backend when accounts exist)
 - [ ] 8. Artifacts, Yearbook, Transmissions, Archive, Collective
@@ -166,5 +166,7 @@ Home hero (src/app/page.tsx + src/components/home/hero.css):
 Navigation (Task 3): routes live in `src/config/nav.ts`. Navbar, menu overlay, and footer render only `live: true` routes; set a page live there when it ships (Privacy is in `legalRoutes`). Wordmark sizes: `<Wordmark size="sm" />` uses wordmark-sm.webp (480px) for nav/footer, "lg" the full asset. Buttons: `src/components/ui/Button.tsx` (primary, secondary, text). Stacking: nav z-30, menu overlay z-40, global Grain z-50.
 
 Home (Task 4.1): sections in `src/components/home/HomeSections.tsx` (Intro, Rules, ChapterDossier, FutureRealities, Closing); hero in `Hero.tsx`. Chapter data comes only from `getNextChapter()` / `getConceptChapters()`. CTAs gate on `isLive(href)` from nav.ts. Reveals: `src/components/ui/Reveal.tsx` ("rise" for the Chapter 001 dossier, "fade" with delay for intro line 2). Redaction bars: `src/components/ui/Redaction.tsx`, width seeded from a string so it is stable. Accent overrides for unrevealed chapters are left out of globals.css until reveal so their names never ship; add `[data-chapter="<slug>"]` when a chapter is revealed.
+
+Manifesto (Task 5): text lives in `content/manifesto.ts` as typed blocks (opening, statement, stanza, paragraph, signoff); never edit its words. Page: `src/app/manifesto/page.tsx`, opening fade on load is its one orchestrated moment, `ScrollProgress` is the desktop accent progress line. Shared styles: `src/components/ui/styles.ts` (container, display). Closing CTA: `src/components/ui/SignalCta.tsx`.
 
 Notes: CSS Modules do not work with the scaffolded Turbopack Tailwind rule in next.config.ts; use plain prefixed CSS files (see src/components/atmosphere/laser-grid.css). Tailwind font utilities: font-sans, font-title. Content imports use the `@content/*` alias; render optional fields only through `isPublic()` from src/lib/content.ts.
