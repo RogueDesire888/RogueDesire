@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/brand/Wordmark";
+import { facts } from "@/config/facts";
 import { instagramUrl, publicValue, site } from "@/config/site";
 import { liveLegalRoutes, liveRoutes } from "@/config/nav";
 
 export async function Footer() {
   "use cache";
-  const owner = publicValue(site.legalName) ?? site.name;
+  const owner = publicValue(facts.legalName) ?? site.name;
   const year = new Date().getFullYear();
 
   return (
