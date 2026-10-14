@@ -104,7 +104,7 @@ Motion and atmosphere:
   - Primitives in `src/components/motion/`: FadeIn, RevealLines (optional glowWords, stagger), ScrubWords, GlitchResolve, LightSweep, NeonIgnite (primitives.tsx); PinnedSwap, PinnedDissolve, BeatWords (pinned.tsx); Atmosphere (data-cue blocks: void, fog, grid, lasers, flare); CursorGlow (site-wide, fine pointer desktop only).
   - Paragraphs only ever get FadeIn (a LightSweep may precede it).
   - Choreography is data: blocks declare `motion` and `cue` (see content/manifesto.ts).
-- Motion setup waits for `document.fonts.ready` before creating ScrollTriggers, then refreshes once (`scheduleRefresh`), so pins measure the final face.
+- Deferred startup (Task 10.2): nothing animates before first paint. `afterFirstPaint()` in `src/lib/motion.ts` resolves after `document.fonts.ready`, two frames, and requestIdleCallback (1.2s timeout; plain 1.2s timer without rIC). gsap and ScrollTrigger are dynamic imports exposed as live bindings (`gsap`, `ScrollTrigger`) filled by `loadGsap()` / `loadMotion()`; only touch them inside `useMotion` setups or after those resolve. `useMotion(ref, setup, { entrance: true })` is for one-shot entrances: gsap core only, tweens paused and played by an IntersectionObserver at 85% of the viewport, skipped if the element is already on screen at start (no flash). Everything else (pins, scrubs, SetZone, DropStage, NightArc, book) loads ScrollTrigger, so pages with only entrances never download it. Pulse engine, Atmosphere cues (IntersectionObserver line at 55%), the LaserRig (lazy chunk via next/dynamic; static fog until then, canvas fades in over 600ms) and CursorGlow (gsap core) all start from `afterFirstPaint()`. Motion setups still refresh once via `scheduleRefresh`, so pins measure the final face.
 - Guardrails (non-negotiable):
   - Server render is the final, readable state. Hidden starting states are set only inside effects, only when motion is allowed. Page is fully readable with JS off and under reduced motion.
   - Real text stays in the DOM. Split text keeps the full string for assistive tech (sr-only) and marks pieces aria-hidden.
@@ -178,6 +178,7 @@ Legal entity name, public contact email, city reveal timing, venue, date, hours,
   - [ ] 8C. Collective (deferred until real people are confirmed; real people only, never placeholders)
 - [x] 9. SEO: metadata, OG images, sitemap, robots, JSON-LD, 404 (privacy page stays on the Task 11 checklist)
 - [x] 10. QA: links, forms, accessibility, performance, mobile (see docs/qa-report.md; scripts in scripts/qa/)
+  - [x] 10.2. Tall mobile hero scene; deferred motion startup (gsap, ScrollTrigger, rig lazy-loaded after first paint)
   - [x] 10.1. Polish: hero LCP (preload + fetchPriority, inline CSS, AVIF), charm phone variants, Yearbook status, Archive touch hint
 - [ ] 11. Domain cutover
 
@@ -192,8 +193,8 @@ Vercel project: rogue-desire (team celestialsoundrecords-9938s-projects). Deploy
 Git integration: connected to RogueDesire888/RogueDesire. Every push to main auto-deploys to the Production environment (vercel.app URL only, no custom domain yet).
 Latest deployment (Task 2): https://rogue-desire-q52zsbqjz-celestialsoundrecords-9938s-projects.vercel.app
 Home hero (src/app/page.tsx + src/components/home/hero.css):
-- Hero box (`.rd-hero`): desktop height min(88vh, 1100px), scene object-cover anchored bottom center; mobile aspect-ratio 1.39 with the scene contained (no crop) at the bottom. Top and side edges fade into black; short bottom fade keeps the grid floor visible.
-- Wordmark stands on the floor: base at 79% of hero height on desktop (86% mobile), width 46% desktop / 85% mobile, via `--wm-base` and `--wm-width` on `.rd-hero`. Spins rotateY 0 to 360 around its own vertical center inside a 1200px perspective stage; back shows mirrored. Glow pulse (brightness, 6s) on the wordmark only.
+- Hero box (`.rd-hero`): desktop height min(88vh, 1100px), wide scene object-cover anchored bottom center. Mobile (under 768px, Task 10.2): the tall scene (`public/brand/hero-scene-mobile.avif/.webp` 900w and `-1350` 1350w, source in gitignored `art/hero-scene-mobile-src.png`) fills `calc(100svh - 4rem)` under the nav with object-cover, served through `<picture>` sources so phones never download the desktop scene; each scene is preloaded high priority for its own media via `preload()` from react-dom. The tagline and description sit on the grid floor inside the hero (`.rd-hero-copy`, soft bottom scrim). Top and side edges fade into black; short bottom fade keeps the grid floor visible.
+- Wordmark stands on the floor: `--wm-base` 21% desktop / 37.5% mobile (the horizon under the laser origin), width 46% desktop / 78% mobile, via `--wm-base` and `--wm-width` on `.rd-hero`. Check with `node scripts/qa/hero.mjs` (QA_OUT for screenshots). Spins rotateY 0 to 360 around its own vertical center inside a 1200px perspective stage; back shows mirrored. Glow pulse (brightness, 6s) on the wordmark only.
 - Reflection: flipped, blurred, 15% opacity copy starting at the wordmark base, spinning in sync, faded with a mask, aria-hidden, clipped inside the hero.
 - Spin speed: `--spin-duration` (default 14s) in `:root` in globals.css. That is the only place to change it.
 - Reduced motion: no spin, no pulse, wordmark static facing forward.

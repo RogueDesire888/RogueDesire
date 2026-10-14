@@ -1,6 +1,6 @@
 # QA report: Task 10
 
-Full-site pass against a local production build (`next build` + `next start`), October 2026. Updated after Task 10.1 (polish); the suite was re-run in full and every check below reflects the 10.1 build.
+Full-site pass against a local production build (`next build` + `next start`), October 2026. Updated after Task 10.1 (polish) and Task 10.2 (tall mobile hero, deferred motion); see the Task 10.2 section for the latest numbers.
 Scripts live in `scripts/qa/` (crawl, browser matrix, axe/keyboard/readability, asset sizes, Lighthouse) and can be re-run against any base URL with `QA_BASE` / `QA_OUT`.
 
 ## Summary
@@ -25,6 +25,24 @@ All targets met. Four issues fixed (one truth leak, one no-JS readability bug, t
 - WebKit: charm spinner (CSS 3D), yearbook book, menu backdrop blur and the rig all ran without errors or overflow. Playwright WebKit is close to Safari but not identical; a real-device Safari look is still worth one pass before cutover.
 - Keyboard (Home > Manifesto > Chapter 001 > Artifacts > Circle): every visible control reachable in DOM order (14 / 12 / 13 / 15 / 17 stops), all with a visible focus ring. The menu and the flyer lightbox trap Tab, close on Esc and return focus to their opener.
 - Reduced motion and JavaScript disabled: no text left hidden on any page. The manifesto opening is a CSS-only fade (runs without JS). The archive's "Opens after the night." line is a hover/focus hint under a visible "Sealed" label, always shown on touch screens.
+
+## Task 10.2 re-run
+
+Tall mobile hero scene plus deferred motion startup (gsap, ScrollTrigger and the WebGL rig load by dynamic import after first paint; ScrollTrigger only on pages with pins or scrubs).
+
+Lighthouse mobile, 3 runs each (medians):
+
+| Page | Performance | LCP | TBT | CLS | A / BP |
+|---|---|---|---|---|---|
+| Home | 92 (92 / 90 / 92) | 3.3 s (3.3 / 3.3 / 3.2) | 121 ms | 0 | 100 / 100 |
+| Manifesto | 94 (93 / 94 / 94) | 2.9 s (all three) | 142 ms | 0 | 100 / 100 |
+| Artifacts | 91 (91 / 92 / 91) | 3.3 s (all three) | 101 ms | 0 | 100 / 100 |
+
+- Home's mobile LCP element is now the tall scene (AVIF, 38 KB at 900w, 64 KB at 1350w), preloaded only for phones; phones never request the desktop scene and desktops never request the mobile one.
+- Hero at 375x812 and 390x844: wordmark stands on the horizon under the laser origin, the full spin stays inside the scene (293 and 304px wide), tagline and description fully above the fold (bottom at 772 of 812 and 804 of 844). Desktop hero box, wordmark and tagline positions unchanged at 1440x900.
+- JS: gsap core, ScrollTrigger and the rig chunk all load after the load event on every page. ScrollTrigger loads on Home, Manifesto, Chapter 001, Artifacts, Yearbook and Archive (pins or scrubs) and not at all on Chapters, Circle or Transmissions.
+- Browser suite: crawl clean; Chromium, WebKit and Firefox at 3 sizes on 12 pages, 0 issues in 108 loads (rig live, pins hold and release); axe 0 violations; keyboard path clean; reduced motion and no-JS readable.
+- What remains of mobile LCP is simulated main-thread and network time for the shared framework JS (about 230 KB), not images or motion.
 
 ## Lighthouse
 
