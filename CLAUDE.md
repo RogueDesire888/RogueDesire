@@ -125,7 +125,7 @@ Site phases (`SITE_PHASE` in config/site.ts), following the 8-week rollout: `sig
 
 ## Content model (Zod, in content/)
 
-- Chapter: code, number, slug, title, line, status (concept | upcoming | past), element, theme, accent, city, venue, date, hours, agePolicy, ticketUrl, frequencies, artifacts, accessibility. Operational fields nullable and hidden when null.
+- Chapter: code, number, slug, title, line, status (concept | upcoming | past), revealed (boolean; unrevealed chapters never output title, line, element, or theme, use `getConceptListing()`), element, theme, accent, city, venue, date, hours, agePolicy, ticketUrl, frequencies, artifacts, accessibility. Operational fields nullable and hidden when null.
 - Frequency: name, role (threshold | activation | peak | afterglow), bio, links, imageApproved.
 - Artifact: code, name, chapter, format, edition, status, image.
 - Transmission: slug, title, type, date, excerpt, body (MDX), chapter, published.
@@ -165,6 +165,6 @@ Home hero (src/app/page.tsx + src/components/home/hero.css):
 
 Navigation (Task 3): routes live in `src/config/nav.ts`. Navbar, menu overlay, and footer render only `live: true` routes; set a page live there when it ships (Privacy is in `legalRoutes`). Wordmark sizes: `<Wordmark size="sm" />` uses wordmark-sm.webp (480px) for nav/footer, "lg" the full asset. Buttons: `src/components/ui/Button.tsx` (primary, secondary, text). Stacking: nav z-30, menu overlay z-40, global Grain z-50.
 
-Home (Task 4): sections in `src/components/home/HomeSections.tsx` (Intro, Pillars, NextChapter, FutureRealities, Closing); hero in `Hero.tsx`. Chapter data comes only from `getNextChapter()` / `getConceptChapters()`. CTAs gate on `isLive(href)` from nav.ts. The page's single reveal is `src/components/ui/Reveal.tsx` (Chapter 001 only).
+Home (Task 4.1): sections in `src/components/home/HomeSections.tsx` (Intro, Rules, ChapterDossier, FutureRealities, Closing); hero in `Hero.tsx`. Chapter data comes only from `getNextChapter()` / `getConceptChapters()`. CTAs gate on `isLive(href)` from nav.ts. Reveals: `src/components/ui/Reveal.tsx` ("rise" for the Chapter 001 dossier, "fade" with delay for intro line 2). Redaction bars: `src/components/ui/Redaction.tsx`, width seeded from a string so it is stable. Accent overrides for unrevealed chapters are left out of globals.css until reveal so their names never ship; add `[data-chapter="<slug>"]` when a chapter is revealed.
 
 Notes: CSS Modules do not work with the scaffolded Turbopack Tailwind rule in next.config.ts; use plain prefixed CSS files (see src/components/atmosphere/laser-grid.css). Tailwind font utilities: font-sans, font-title. Content imports use the `@content/*` alias; render optional fields only through `isPublic()` from src/lib/content.ts.
