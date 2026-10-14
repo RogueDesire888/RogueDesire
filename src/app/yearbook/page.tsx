@@ -43,6 +43,7 @@ export default function YearbookPage() {
         <h2 id="editions-title" className={heading}>
           Collector editions
         </h2>
+        <p className="mt-3 font-sans text-sm text-rd-chrome">Status: in development</p>
         <FadeIn className="mt-8">
           <p className={body}>Editions, formats, and release details will be announced to the Circle.</p>
         </FadeIn>
