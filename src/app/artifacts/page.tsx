@@ -65,7 +65,7 @@ export default function ArtifactsPage() {
           <div className="mt-24 grid items-center gap-14 md:mt-36 md:grid-cols-2 md:gap-20">
             <figure className="flex flex-col items-center gap-5 md:items-start">
               <div className="w-[min(78vw,340px)]">
-                <ArtifactCard title={chapter.title} line={artifact.line} code={artifact.code} />
+                <ArtifactCard code={artifact.code} />
               </div>
               <figcaption className="text-sm text-rd-chrome">The card it comes with.</figcaption>
             </figure>

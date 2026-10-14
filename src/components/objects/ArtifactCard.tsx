@@ -1,21 +1,21 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef } from "react";
-import { Wordmark } from "@/components/brand/Wordmark";
 import { Redaction } from "@/components/ui/Redaction";
+import flyer from "../../../public/artifacts/ch001-flyer.webp";
 import "./artifact-card.css";
 
 const MAX_TILT = 12;
 
-type Props = { title: string; line: string | null; code: string };
-
 /**
- * Artifact card (5x7) built in code. Tilts toward the pointer (max 12deg) with
- * a holographic foil that shifts with the tilt. Touch: device orientation when
- * no permission prompt is needed, otherwise a slow automatic sway. Flat and
- * static under reduced motion; paused offscreen.
+ * Artifact card (5x7): the Artifact 001 flyer as its face. Tilts toward the
+ * pointer (max 12deg) with a holographic foil that shifts with the tilt. Touch:
+ * device orientation when no permission prompt is needed, otherwise a slow
+ * automatic sway. Flat and static under reduced motion; paused offscreen.
+ * Edition and code sit in a thin strip beneath the card, not on it.
  */
-export function ArtifactCard({ title, line, code }: Props) {
+export function ArtifactCard({ code }: { code: string }) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,7 +49,6 @@ export function ArtifactCard({ title, line, code }: Props) {
 
     const frame = (now: number) => {
       if (!fine && !gotOrientation) {
-        // Slow automatic sway on touch devices without orientation data.
         const t = (now - swayFrom) / 1000;
         tx = Math.sin(t * 0.6) * 7;
         ty = Math.sin(t * 0.45 + 1) * 4;
@@ -87,27 +86,27 @@ export function ArtifactCard({ title, line, code }: Props) {
   }, []);
 
   return (
-    <div className="[perspective:900px]">
-      <div
-        ref={ref}
-        className="rd-card relative aspect-[5/7] w-full max-w-[340px] overflow-hidden border border-rd-chrome/30 bg-[linear-gradient(160deg,#121218,#050507_60%,#0b0b12)] shadow-[0_30px_80px_-20px_color-mix(in_srgb,var(--accent)_45%,transparent)]"
-      >
-        <div className="absolute inset-3 border border-rd-chrome/20" aria-hidden="true" />
-        <div className="relative flex h-full flex-col items-center px-6 py-8 text-center">
-          <div className="w-20">
-            <Wordmark size="sm" />
-          </div>
-          <div className="flex flex-1 flex-col items-center justify-center gap-4">
-            <p className="rd-text-glow font-display text-5xl leading-[1.08] font-semibold text-rd-white">{title}</p>
-            {line && <p className="max-w-[22ch] text-xs leading-relaxed text-rd-chrome">{line}</p>}
-          </div>
-          <p className="flex items-center gap-2 text-xs text-rd-chrome">
-            <span>No.</span>
-            <Redaction seed={`${code}-edition`} className="!w-14" />
-          </p>
-          <p className="mt-3 text-[10px] tracking-[0.3em] text-rd-chrome">{code}</p>
+    <div className="flex flex-col gap-3">
+      <div className="[perspective:900px]">
+        <div
+          ref={ref}
+          className="rd-card relative aspect-[5/7] w-full max-w-[340px] overflow-hidden border border-rd-chrome/30 shadow-[0_30px_80px_-20px_color-mix(in_srgb,var(--accent)_45%,transparent)]"
+        >
+          <Image
+            src={flyer}
+            alt="Artifact 001: Ascension flyer"
+            sizes="340px"
+            className="absolute inset-0 size-full object-cover"
+          />
+          <div aria-hidden="true" className="rd-card-foil pointer-events-none absolute inset-0" />
         </div>
-        <div aria-hidden="true" className="rd-card-foil pointer-events-none absolute inset-0" />
+      </div>
+      <div className="flex max-w-[340px] items-center justify-between gap-4 border-t border-rd-chrome/20 pt-3 text-xs text-rd-chrome">
+        <span className="flex items-center gap-2">
+          <span>No.</span>
+          <Redaction seed={`${code}-edition`} className="!w-14" />
+        </span>
+        <span className="text-[10px] tracking-[0.3em]">{code}</span>
       </div>
     </div>
   );

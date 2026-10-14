@@ -26,7 +26,8 @@
     );
   background-blend-mode: screen;
   mix-blend-mode: color-dodge;
-  opacity: 0.32;
+  /* Low enough that the flyer art stays readable under the foil. */
+  opacity: 0.16;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -34,6 +35,6 @@
     transform: none;
   }
   .rd-card-foil {
-    opacity: 0.18;
+    opacity: 0.08;
   }
 }
