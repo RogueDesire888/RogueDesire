@@ -4,6 +4,7 @@ import { site } from "@/config/site";
 import heroScene from "../../../public/brand/hero-scene.webp";
 import wordmark from "../../../public/brand/wordmark.webp";
 
+/* Mobile sizes are capped at 300px so a 3x phone picks the 900px variant at most. */
 export function Hero() {
   return (
     <section
@@ -18,15 +19,16 @@ export function Hero() {
         <Image
           src={heroScene}
           alt=""
-          priority
-          sizes="100vw"
+          preload
+          fetchPriority="high"
+          sizes="(min-width: 768px) 100vw, 300px"
           className="rd-hero-scene absolute bottom-0 left-0 h-auto w-full md:top-0 md:h-full md:object-cover md:object-bottom"
         />
         <div className="rd-hero-reflection" aria-hidden="true">
           <div className="rd-hero-flip">
             <div className="rd-spin-stage">
               <div className="rd-spin">
-                <Image src={wordmark} alt="" sizes="(min-width: 768px) 55vw, 85vw" />
+                <Image src={wordmark} alt="" loading="eager" fetchPriority="high" sizes="(min-width: 768px) 55vw, 300px" />
               </div>
             </div>
           </div>
@@ -36,8 +38,9 @@ export function Hero() {
             <Image
               src={wordmark}
               alt="Rogue Desire"
-              priority
-              sizes="(min-width: 768px) 55vw, 85vw"
+              preload
+              fetchPriority="high"
+              sizes="(min-width: 768px) 55vw, 300px"
               className="rd-glow-pulse"
             />
           </div>
