@@ -171,7 +171,7 @@ Legal entity name, public contact email, city reveal timing, venue, date, hours,
 - [x] 4. Home
 - [x] 5. Manifesto
 - [x] 6. Chapters index + Chapter 001 with chapter theming
-- [ ] 7. Enter the Circle form (UI first, backend when accounts exist)
+- [ ] 7. Enter the Circle form (UI and server action done, unlisted; backend waits on Supabase + /privacy)
 - [ ] 8. Artifacts, Yearbook, Transmissions, Archive, Collective
 - [ ] 9. SEO: metadata, OG images, sitemap, robots, JSON-LD, privacy page, 404
 - [ ] 10. QA: links, forms, accessibility, performance, mobile
@@ -196,5 +196,11 @@ Home (Task 4.1): sections in `src/components/home/HomeSections.tsx` (Intro, Rule
 Manifesto (Task 5): text lives in `content/manifesto.ts` as typed blocks (opening, statement, stanza, paragraph, signoff); never edit its words. Page: `src/app/manifesto/page.tsx` maps blocks to motion primitives; `ScrollProgress` is the desktop accent progress line. The Atmosphere lives in the root layout (after main) so its cue triggers are measured after pin spacers exist. Shared styles: `src/components/ui/styles.ts` (container, display). Closing CTA: `src/components/ui/SignalCta.tsx`.
 
 Chapters (Task 6): `/chapters` (Year One index: symbols, Chapter 001 feature, concept listing via `getConceptListing()`) and `/chapters/ascension` (hero, description, meaning BeatWords, element and palette, The night, sound, Artifact 001, style direction marquee, guest code, access). Chapter page content lives on the chapter entry (opening, closingLine, meaning, elements, soundDirection {line, genres}, styleDirection {lines, words}, guestCodeIntro, guestCode, nightArc); never publish times for night phases. `NightArc` (`src/components/chapter/NightArc.tsx`) plays the arc on the atmosphere (intensity 0.2 / 0.5 / 1.0 / 0.3, fog / lasers / lasers / fog, one burst at Peak); desktop pins ~200vh. `Disclosure` (`src/components/chapter/Disclosure.tsx`) is the shared disclosure rows component (home dossier and chapter access). Frequencies carry a `chapter` slug; `getFrequencies(slug, role)`. Unlisted live routes (`unlisted: true` in nav.ts) are linkable via isLive() but not shown in nav, menu, or footer.
+
+Enter the Circle (Task 7, built, not live): `/circle` is reachable by URL but `live: false, unlisted: true` and noindex. Form: `src/components/circle/CircleForm.tsx`; server action `src/app/circle/actions.ts` (Zod, honeypot `website`, signed 2.5s "opened" token, 5 per IP per hour via salted hash, in-memory for now). Storage goes through `getCircleStore()` in `src/lib/circle-store.ts` (Supabase REST, server-only); with no store it returns "The Circle opens soon." Without JavaScript the action answers with a 303 to `/circle?status=` or `?error=&f=` (codes only, never typed values); with JavaScript it returns inline state. Dev-only preview: `/circle?preview=success`.
+Before the Circle goes live:
+- (a) Connect Supabase in Vercel (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, Postgres URL in all environments) and run `supabase/migrations/001_circle.sql`. Then move rate limiting to the database (count by ip_hash) and set CIRCLE_FORM_SECRET and CIRCLE_IP_SALT.
+- (b) Build `/privacy`, which needs `legalName` and `contactEmail` set in `src/config/site.ts`. The form links Privacy automatically once /privacy is live.
+- Then set /circle `live: true`, remove `unlisted` and the noindex.
 
 Notes: CSS Modules do not work with the scaffolded Turbopack Tailwind rule in next.config.ts; use plain prefixed CSS files (see src/components/atmosphere/laser-grid.css). Tailwind font utilities: font-sans, font-display (defined with @utility in globals.css). Content imports use the `@content/*` alias; render optional fields only through `isPublic()` from src/lib/content.ts.
