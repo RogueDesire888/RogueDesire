@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CharmSpinner } from "@/components/artifacts/CharmSpinner";
+import { FlyerLightbox } from "@/components/artifacts/FlyerLightbox";
 import { FadeIn, FadeInStagger, ScrubWords } from "@/components/motion/primitives";
 import { ArtifactCard } from "@/components/objects/ArtifactCard";
 import { SignalCta } from "@/components/ui/SignalCta";
@@ -76,6 +77,9 @@ export default function ArtifactsPage() {
               )}
               <p className="text-sm text-rd-chrome">Status: {STATUS_LABEL[artifact.status]}</p>
             </div>
+          </div>
+          <div className="mt-12 flex justify-center md:justify-start">
+            <FlyerLightbox />
           </div>
         </section>
       )}
