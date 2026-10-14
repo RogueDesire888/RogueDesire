@@ -47,6 +47,17 @@
   transform: rotateY(180deg) translateZ(calc(var(--t) / 2));
 }
 
+/* Phones: 700px-tall faces (the charm is at most 460 CSS px tall there). */
+@media (max-width: 767px) {
+  .rd-charm-front {
+    background-image: url("/artifacts/ch001-charm-front-sm.webp");
+  }
+
+  .rd-charm-back {
+    background-image: url("/artifacts/ch001-charm-back-sm.webp");
+  }
+}
+
 /* Edge layers: the front silhouette filled with dark chrome, stacked through the thickness. */
 .rd-charm-edge {
   -webkit-mask: url("/artifacts/ch001-charm-mask.png") center / 100% 100% no-repeat;
