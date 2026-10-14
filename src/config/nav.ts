@@ -17,7 +17,7 @@ export const routes: NavRoute[] = [
   { label: "Manifesto", href: "/manifesto", live: true, primary: true },
   { label: "Chapters", href: "/chapters", live: true, primary: true },
   { label: "Chapter 001: Ascension", href: "/chapters/ascension", live: true, unlisted: true },
-  { label: "Archive", href: "/archive", live: false, primary: true },
+  { label: "Archive", href: "/archive", live: true, primary: true },
   { label: "Transmissions", href: "/transmissions", live: false },
   { label: "Artifacts", href: "/artifacts", live: true, primary: true },
   { label: "Collective", href: "/collective", live: false },

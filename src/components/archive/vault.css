@@ -1,0 +1,53 @@
+/* Archive vault: rotating seal ring and sealed compartments. */
+.rd-seal-ring {
+  animation: rd-seal-spin 36s linear infinite;
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent-glow) 60%, transparent));
+}
+
+@keyframes rd-seal-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rd-compartment .rd-lock {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent-glow) 55%, transparent));
+}
+
+.rd-compartment:hover .rd-lock,
+.rd-compartment:focus .rd-lock {
+  animation: rd-lock-pulse 900ms ease-out 1;
+}
+
+.rd-compartment .rd-opens {
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.rd-compartment:hover .rd-opens,
+.rd-compartment:focus .rd-opens {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes rd-lock-pulse {
+  40% {
+    transform: scale(1.18);
+    filter: drop-shadow(0 0 14px var(--accent-glow));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rd-seal-ring,
+  .rd-compartment:hover .rd-lock,
+  .rd-compartment:focus .rd-lock {
+    animation: none;
+  }
+  /* Static: the line is simply shown. */
+  .rd-compartment .rd-opens {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
