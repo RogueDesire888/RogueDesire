@@ -66,8 +66,10 @@ html {
   background: var(--rd-black);
 }
 
+/* html carries the black base so fixed atmosphere layers (z-index -10) can sit
+   between it and page content. */
 body {
-  background: var(--rd-black);
+  background: transparent;
   color: var(--rd-white);
   font-family: var(--font-body), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
