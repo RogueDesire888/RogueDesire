@@ -22,8 +22,8 @@ if (!fs.existsSync(ART)) {
   process.exit(1);
 }
 const WORDMARK = path.join(ROOT, "public/brand/wordmark.webp");
-const GRENZE = path.join(ROOT, "scripts/fonts/GrenzeGotisch[wght].ttf");
-const HANKEN = path.join(ROOT, "scripts/fonts/HankenGrotesk[wght].ttf");
+const GRENZE = path.join(ROOT, "scripts/fonts/GrenzeGotisch-Variable.ttf");
+const HANKEN = path.join(ROOT, "scripts/fonts/HankenGrotesk-Variable.ttf");
 const OUT_DIR = path.join(ROOT, "public/artifacts");
 
 const VIOLET = { r: 0x8b, g: 0x2c, b: 0xff };
