@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { LaserGrid } from "@/components/atmosphere/LaserGrid";
-import { gsap, MOTION_OK, ScrollTrigger } from "@/lib/motion";
+import { fontsReady, gsap, MOTION_OK, scheduleRefresh, ScrollTrigger } from "@/lib/motion";
 import "./motion.css";
 
 export type Cue = "void" | "fog" | "grid" | "flare";
@@ -21,22 +21,31 @@ export function Atmosphere({ initial = "void" }: { initial?: Cue }) {
     const setCue = (cue?: string) => {
       if (cue) layer.dataset.activeCue = cue;
     };
+    let cancelled = false;
     const mm = gsap.matchMedia();
-    mm.add(MOTION_OK, () => {
-      setCue(initial);
-      document.querySelectorAll<HTMLElement>("[data-cue]").forEach((block) => {
-        ScrollTrigger.create({
-          trigger: block,
-          start: "top 55%",
-          end: "bottom 55%",
-          onEnter: () => setCue(block.dataset.cue),
-          onEnterBack: () => setCue(block.dataset.cue),
-        });
-      });
-      ScrollTrigger.refresh();
-    });
     mm.add("(prefers-reduced-motion: reduce)", () => setCue("void"));
-    return () => mm.revert();
+    // Created after fonts load and after the primitives (mounted earlier), so
+    // cue positions include pin spacers and final line wraps.
+    fontsReady().then(() => {
+      if (cancelled) return;
+      mm.add(MOTION_OK, () => {
+        setCue(initial);
+        document.querySelectorAll<HTMLElement>("[data-cue]").forEach((block) => {
+          ScrollTrigger.create({
+            trigger: block,
+            start: "top 55%",
+            end: "bottom 55%",
+            onEnter: () => setCue(block.dataset.cue),
+            onEnterBack: () => setCue(block.dataset.cue),
+          });
+        });
+        scheduleRefresh();
+      });
+    });
+    return () => {
+      cancelled = true;
+      mm.revert();
+    };
   }, [initial]);
 
   return (

@@ -46,22 +46,47 @@ export function usePrefersReducedMotion(): boolean {
 
 type MotionSetup = (opts: { el: HTMLElement; desktop: boolean }) => void | (() => void);
 
+let refreshQueued = false;
+/** One ScrollTrigger.refresh per frame, however many components ask for it. */
+export function scheduleRefresh() {
+  if (refreshQueued) return;
+  refreshQueued = true;
+  requestAnimationFrame(() => {
+    refreshQueued = false;
+    ScrollTrigger.refresh();
+  });
+}
+
+/** Resolves once web fonts are loaded, so triggers measure final line wraps. */
+export function fontsReady(): Promise<unknown> {
+  return document.fonts?.ready ?? Promise.resolve();
+}
+
 /**
- * Runs `setup` scoped to `ref` only when motion is allowed. Desktop and mobile
- * get separate runs so pinning can be desktop-only. Everything created inside
- * (tweens, ScrollTriggers, inline styles) is reverted on unmount or when the
- * media conditions change.
+ * Runs `setup` scoped to `ref` only when motion is allowed, after web fonts
+ * load (so pins and line wraps are measured with the final face). Desktop and
+ * mobile get separate runs so pinning can be desktop-only. Everything created
+ * inside (tweens, ScrollTriggers, inline styles) is reverted on unmount or when
+ * the media conditions change.
  */
 export function useMotion(ref: RefObject<HTMLElement | null>, setup: MotionSetup) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    let cancelled = false;
     const mm = gsap.matchMedia(el);
-    mm.add({ desktop: DESKTOP_MOTION, mobile: MOBILE_MOTION }, (context) => {
-      const { desktop } = context.conditions as { desktop: boolean; mobile: boolean };
-      return setup({ el, desktop });
+    fontsReady().then(() => {
+      if (cancelled) return;
+      mm.add({ desktop: DESKTOP_MOTION, mobile: MOBILE_MOTION }, (context) => {
+        const { desktop } = context.conditions as { desktop: boolean; mobile: boolean };
+        return setup({ el, desktop });
+      });
+      scheduleRefresh();
     });
-    return () => mm.revert();
+    return () => {
+      cancelled = true;
+      mm.revert();
+    };
     // Setup runs once per mount; media changes are handled by gsap.matchMedia.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
