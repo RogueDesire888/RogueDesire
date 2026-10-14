@@ -1,7 +1,7 @@
-import type { ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { Redaction } from "@/components/ui/Redaction";
 import { Reveal } from "@/components/ui/Reveal";
+import { Disclosure } from "@/components/chapter/Disclosure";
 import { DropStage } from "@/components/motion/DropStage";
 import { FadeInStagger } from "@/components/motion/primitives";
 import { SetZone } from "@/components/motion/SetZone";
@@ -81,31 +81,6 @@ export function ChapterDossier() {
   if (!chapter) return null;
 
   const href = `/chapters/${chapter.slug}`;
-  const location = [chapter.venue, chapter.city].filter(isPublic).join(", ");
-  const frequencies = chapter.frequencies.map((f) => f.name).join(", ");
-  const dateLabel = isPublic(chapter.date)
-    ? new Date(`${chapter.date}T12:00:00`).toLocaleDateString("en-US", {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      })
-    : null;
-
-  const rows: { label: string; value: ReactNode | null }[] = [
-    { label: "Date", value: dateLabel },
-    { label: "Location", value: isPublic(location) ? location : null },
-    { label: "Frequencies", value: isPublic(frequencies) ? frequencies : null },
-    {
-      label: "Access",
-      value: isPublic(chapter.ticketUrl) ? (
-        <a href={chapter.ticketUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
-          Tickets
-        </a>
-      ) : null,
-    },
-  ];
-
   return (
     <section
       data-fog-cap
@@ -129,26 +104,7 @@ export function ChapterDossier() {
             <p data-drop="desc" className="mt-5 max-w-[60ch] leading-relaxed text-rd-chrome">{chapter.description}</p>
           )}
 
-          <dl className={`mt-10 w-full max-w-[720px] border-b ${hairline}`}>
-            {rows.map((row) => (
-              <div
-                key={row.label}
-                data-drop="row"
-                className={`grid grid-cols-[6.5rem_1fr] items-center gap-4 border-t ${hairline} py-3 sm:grid-cols-[10rem_1fr]`}
-              >
-                <dt className="text-sm text-rd-chrome">{row.label}</dt>
-                <dd className="flex min-w-0 items-center gap-4 text-rd-white">
-                  {row.value ?? (
-                    <>
-                      <Redaction seed={`${chapter.code}-${row.label}`} />
-                      <span className="shrink-0 text-sm whitespace-nowrap text-rd-chrome">Undisclosed</span>
-                    </>
-                  )}
-                </dd>
-              </div>
-            ))}
-          </dl>
-          <p data-drop="details" className="mt-5 text-sm text-rd-chrome">Details surface when the signal is ready.</p>
+          <Disclosure chapter={chapter} drop />
 
           {isLive(href) && (
             <div data-drop="cta" className="mt-8">

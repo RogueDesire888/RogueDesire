@@ -1,0 +1,15 @@
+/* Night arc focus: only while motion is live. Static: every phase fully visible. */
+.rd-arc[data-live="true"] [data-phase] {
+  opacity: 0.32;
+  transition: opacity 700ms ease;
+}
+
+.rd-arc[data-live="true"] [data-phase][data-active="true"] {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rd-arc [data-phase] {
+    opacity: 1 !important;
+  }
+}

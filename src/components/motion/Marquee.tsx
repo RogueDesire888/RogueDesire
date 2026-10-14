@@ -6,10 +6,11 @@ import { usePulse } from "@/lib/pulse";
 const COPIES = 3;
 const BASE_SPEED = 40; // px per second
 
-function Group({ text }: { text: string }) {
+function Group({ items }: { items: string[] }) {
+  const sequence = Array.from({ length: Math.max(1, Math.ceil(COPIES / items.length)) }, () => items).flat();
   return (
     <div className="flex shrink-0 items-center" data-group>
-      {Array.from({ length: COPIES }, (_, i) => (
+      {sequence.map((text, i) => (
         <span key={i} className="flex items-center">
           <span
             className="px-[0.35em] font-display text-[clamp(4.5rem,13vw,12rem)] leading-[1.1] font-semibold whitespace-nowrap text-transparent"
@@ -33,10 +34,14 @@ function Group({ text }: { text: string }) {
  */
 export function Marquee({
   text,
+  items,
   direction = 1,
   cue,
 }: {
-  text: string;
+  /** One repeating phrase... */
+  text?: string;
+  /** ...or several, each followed by the diamond separator. */
+  items?: string[];
   direction?: 1 | -1;
   /** Atmosphere cue while the band is in view. */
   cue?: string;
@@ -44,6 +49,7 @@ export function Marquee({
   const ref = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const pulse = usePulse();
+  const list = items ?? (text ? [text] : []);
 
   useEffect(() => {
     const band = ref.current;
@@ -93,10 +99,10 @@ export function Marquee({
 
   return (
     <div ref={ref} data-cue={cue} data-fog-cap className="relative w-full overflow-hidden py-6 md:py-10">
-      <p className="sr-only">{text}</p>
+      <p className="sr-only">{list.join(", ")}</p>
       <div ref={trackRef} aria-hidden="true" className="flex w-max will-change-transform">
-        <Group text={text} />
-        <Group text={text} />
+        <Group items={list} />
+        <Group items={list} />
       </div>
     </div>
   );
