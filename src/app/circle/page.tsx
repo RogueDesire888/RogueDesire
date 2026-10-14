@@ -8,11 +8,7 @@ import { isLive } from "@/config/nav";
 import { circleStateFromQuery } from "@/lib/circle-shared";
 import { createFormToken } from "@/lib/circle-token";
 
-export const metadata: Metadata = {
-  title: "Enter the Circle",
-  // Unlisted until the Circle opens (see CLAUDE.md).
-  robots: { index: false, follow: false },
-};
+export const metadata: Metadata = { title: "Enter the Circle" };
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
