@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Composes the finished Artifact 001 flyer at a true 5x7: the art full width
-// and vertically centered on its own black, dark scrims over its top and
-// bottom, the wordmark and "Ascension" / "Chapter 001" overlaid on the scrims,
+// and vertically centered on its own black, the wordmark small in the top-left
+// corner and "Year One / Awakening" top right (corner scrims only, so the idol
+// stays clear), "Ascension" / "Chapter 001" over a bottom scrim,
 // all inside a 6% safe margin. Text is drawn as opentype.js paths.
 // The source art is large and gitignored: put it at art/ch001-flyer-art.png
 // (or pass FLYER_ART=/path/to/art.png).
@@ -89,13 +90,14 @@ async function glow(buf, w, h, sigma, opacity) {
 const { width: W, height: artH } = await sharp(ART).metadata();
 const H = Math.round((W * 7) / 5); // true 5x7
 const artTop = Math.round((H - artH) / 2);
-const margin = Math.round(MARGIN * H);
+const margin = Math.round(MARGIN * H); // vertical safe margin
+const marginX = Math.round(MARGIN * W); // horizontal safe margin
 const { data: px } = await sharp(ART).extract({ left: 0, top: 0, width: 1, height: 1 }).raw().toBuffer({ resolveWithObject: true });
 const background = { r: px[0], g: px[1], b: px[2], alpha: 1 };
 const bg = `rgb(${px[0]},${px[1]},${px[2]})`;
 
 // Elements.
-const wordmarkW = Math.round(W * 0.42);
+const wordmarkW = Math.round(W * 0.24);
 const wordmarkBuf = await sharp(WORDMARK).resize({ width: wordmarkW }).png().toBuffer();
 const wordmarkH = (await sharp(wordmarkBuf).metadata()).height;
 const title = await textToWidth(loadFont(GRENZE, 600), "Ascension", Math.round(W * 0.8), WHITE);
@@ -103,19 +105,33 @@ const chapter = await textPng(loadFont(HANKEN, 400), "Chapter 001", Math.round(W
 const titleGap = Math.round(title.h * 0.18);
 const blockH = title.h + titleGap + chapter.h;
 const wordmarkTop = margin;
+const wordmarkLeft = marginX;
+// Top-right corner: two tiny stacked lines, vertically centred on the wordmark.
+const hanken = loadFont(HANKEN, 500);
+const cornerSize = Math.round(W * 0.016);
+const cornerLines = await Promise.all(["YEAR ONE", "AWAKENING"].map((t) => textPng(hanken, t, cornerSize, CHROME, 0.32)));
+const cornerGap = Math.round(cornerSize * 0.7);
+const cornerH = cornerLines[0].h + cornerGap + cornerLines[1].h;
+const cornerTop = Math.round(wordmarkTop + wordmarkH / 2 - cornerH / 2);
 const chapterTop = H - margin - chapter.h;
 const titleTop = chapterTop - titleGap - title.h;
 
-// Scrims (black to transparent) over the art: ~22% top and ~28% bottom,
-// stretched where needed so they always reach past the type they sit under.
-const topScrimEnd = Math.max(artTop + artH * 0.22, wordmarkTop + wordmarkH + 60);
+// Scrims: soft corner pools behind the wordmark (top left) and the corner
+// lines (top right) so the idol's crown and head stay clear, plus the bottom
+// scrim (~28%) under the title.
 const bottomScrimStart = Math.min(artTop + artH * (1 - 0.28), titleTop - 80);
+const pool = (id, cx, cy, rx, ry) =>
+  `<radialGradient id="${id}" cx="${cx}" cy="${cy}" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(${cx} ${cy}) scale(${rx} ${ry}) translate(${-cx} ${-cy})"><stop offset="0" stop-color="${bg}" stop-opacity="0.92"/><stop offset="0.6" stop-color="${bg}" stop-opacity="0.6"/><stop offset="1" stop-color="${bg}" stop-opacity="0"/></radialGradient>`;
+const wmCx = wordmarkLeft + wordmarkW / 2, wmCy = wordmarkTop + wordmarkH / 2;
+const crCx = W - marginX - cornerLines[1].w / 2, crCy = cornerTop + cornerH / 2;
 const scrims = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
   <defs>
-    <linearGradient id="t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${bg}" stop-opacity="1"/><stop offset="0.55" stop-color="${bg}" stop-opacity="0.82"/><stop offset="1" stop-color="${bg}" stop-opacity="0"/></linearGradient>
+    ${pool("tl", wmCx, wmCy, wordmarkW * 0.85, wordmarkH * 1.15)}
+    ${pool("tr", crCx, crCy, cornerLines[1].w * 1.1, cornerH * 2.2)}
     <linearGradient id="b" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${bg}" stop-opacity="1"/><stop offset="0.55" stop-color="${bg}" stop-opacity="0.82"/><stop offset="1" stop-color="${bg}" stop-opacity="0"/></linearGradient>
   </defs>
-  <rect x="0" y="0" width="${W}" height="${topScrimEnd}" fill="url(#t)"/>
+  <rect x="0" y="0" width="${W}" height="${H}" fill="url(#tl)"/>
+  <rect x="0" y="0" width="${W}" height="${H}" fill="url(#tr)"/>
   <rect x="0" y="${bottomScrimStart}" width="${W}" height="${H - bottomScrimStart}" fill="url(#b)"/>
 </svg>`);
 
@@ -128,8 +144,10 @@ const composed = await sharp({ create: { width: W, height: H, channels: 4, backg
   .composite([
     { input: ART, left: 0, top: artTop },
     { input: scrims, left: 0, top: 0 },
-    { input: wmGlow.buf, left: cx(wordmarkW) - wmGlow.pad, top: wordmarkTop - wmGlow.pad },
-    { input: wordmarkBuf, left: cx(wordmarkW), top: wordmarkTop },
+    { input: wmGlow.buf, left: wordmarkLeft - wmGlow.pad, top: wordmarkTop - wmGlow.pad },
+    { input: wordmarkBuf, left: wordmarkLeft, top: wordmarkTop },
+    { input: cornerLines[0].buf, left: W - marginX - cornerLines[0].w, top: cornerTop },
+    { input: cornerLines[1].buf, left: W - marginX - cornerLines[1].w, top: cornerTop + cornerLines[0].h + cornerGap },
     { input: wideGlow.buf, left: cx(title.w) - wideGlow.pad, top: titleTop - wideGlow.pad },
     { input: tightGlow.buf, left: cx(title.w) - tightGlow.pad, top: titleTop - tightGlow.pad },
     { input: title.buf, left: cx(title.w), top: titleTop },
@@ -145,7 +163,8 @@ fs.writeFileSync(desktop, composed);
 
 console.log(JSON.stringify({
   canvas: `${W}x${H}`, artTop, margin,
-  wordmark: { top: wordmarkTop, bottom: wordmarkTop + wordmarkH, topScrimEnd: Math.round(topScrimEnd) },
+  wordmark: { left: wordmarkLeft, top: wordmarkTop, right: wordmarkLeft + wordmarkW, bottom: wordmarkTop + wordmarkH },
+  corner: { top: cornerTop, right: W - marginX, height: cornerH },
   title: { top: titleTop, bottom: chapterTop + chapter.h, limit: H - margin, bottomScrimStart: Math.round(bottomScrimStart), blockH },
   saved: ["public/artifacts/ch001-flyer.webp", desktop],
 }, null, 1));
