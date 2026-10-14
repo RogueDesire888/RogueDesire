@@ -20,7 +20,7 @@ const body = "max-w-[60ch] text-lg leading-relaxed text-rd-chrome md:text-xl";
 export function generateMetadata(): Metadata {
   const chapter = getChapter(SLUG);
   if (!chapter) return {};
-  const firstSentence = chapter.longDescription?.split(/(?<=\.)\s/)[0] ?? "";
+  const firstSentence = chapter.opening?.[0]?.split(/(?<=\.)\s/)[0] ?? "";
   return {
     title: `Chapter ${chapter.number}: ${chapter.title}`,
     description: [chapter.line, firstSentence].filter(Boolean).join(" "),
@@ -47,13 +47,16 @@ export default function AscensionPage() {
         <p className="mt-4 text-sm text-rd-chrome">{chapter.era}</p>
       </section>
 
-      {/* 2. Description */}
+      {/* 2. Opening */}
       <section data-cue="fog" data-fog-cap className={section}>
-        {isPublic(chapter.longDescription) && (
-          <FadeIn>
-            <p className={body}>{chapter.longDescription}</p>
-          </FadeIn>
+        {chapter.opening?.[0] && (
+          <p className={`${display} max-w-[22ch] text-rd-white`}>{chapter.opening[0]}</p>
         )}
+        {chapter.opening?.slice(1).map((paragraph) => (
+          <FadeIn key={paragraph} className="mt-12">
+            <p className={body}>{paragraph}</p>
+          </FadeIn>
+        ))}
         {isPublic(chapter.closingLine) && (
           <ScrubWords text={chapter.closingLine} className={`${display} mt-24 max-w-[18ch] text-rd-white md:mt-32`} />
         )}
@@ -66,27 +69,35 @@ export default function AscensionPage() {
         </section>
       )}
 
-      {/* 4. Element and palette */}
-      <section data-cue="fog" data-fog-cap aria-label="Element" className={section}>
-        <p className={`${display} max-w-[20ch] text-rd-white`}>{chapter.element}</p>
-        {chapter.palette && (
-          <FadeInStagger stagger={0.12} duration={0.8} className="mt-16 flex flex-wrap gap-x-10 gap-y-8">
-            {chapter.palette.map((swatch) => (
-              <li key={swatch.token} className="flex w-24 flex-col items-center gap-3 text-center">
-                <span
-                  aria-hidden="true"
-                  className="size-14 rounded-full border border-rd-chrome/30"
-                  style={{
-                    background: `var(${swatch.token})`,
-                    boxShadow: `0 0 24px color-mix(in srgb, var(${swatch.token}) 55%, transparent)`,
-                  }}
-                />
-                <span className="text-sm text-rd-chrome">{swatch.name}</span>
+      {/* 4. Inside Ascension */}
+      {chapter.elements && (
+        <section data-cue="fog" data-fog-cap aria-labelledby="inside-title" className={section}>
+          <h2 id="inside-title" className={heading}>
+            Inside {chapter.title}
+          </h2>
+          <FadeInStagger blur stagger={0.12} duration={0.9} className="mt-12 border-b border-rd-chrome/20">
+            {chapter.elements.map((element) => (
+              <li
+                key={element.name}
+                className="grid gap-3 border-t border-rd-chrome/20 py-8 md:grid-cols-12 md:items-center md:gap-8"
+              >
+                <h3 className="flex items-center gap-4 font-display text-4xl leading-[1.08] font-semibold text-rd-white md:col-span-4 md:text-5xl">
+                  <span
+                    aria-hidden="true"
+                    className="size-4 shrink-0 rounded-full border border-rd-chrome/30"
+                    style={{
+                      background: `var(${element.token})`,
+                      boxShadow: `0 0 16px color-mix(in srgb, var(${element.token}) 60%, transparent)`,
+                    }}
+                  />
+                  {element.name}
+                </h3>
+                <p className="max-w-[48ch] text-lg text-rd-chrome md:col-span-8">{element.line}</p>
               </li>
             ))}
           </FadeInStagger>
-        )}
-      </section>
+        </section>
+      )}
 
       {/* 5. The night */}
       {chapter.nightArc && (
@@ -121,13 +132,16 @@ export default function AscensionPage() {
       )}
 
       {/* 6. Sound */}
-      {isPublic(chapter.soundDirection) && (
+      {chapter.soundDirection && (
         <section data-cue="fog" data-fog-cap aria-labelledby="sound-title" className={section}>
           <h2 id="sound-title" className={heading}>
             Sound
           </h2>
-          <FadeIn className="mt-8">
-            <p className={body}>{chapter.soundDirection}</p>
+          <FadeIn className="mt-10">
+            <p className="max-w-[30ch] font-display text-[clamp(1.75rem,3.5vw,3rem)] leading-[1.15] font-semibold text-rd-white">
+              {chapter.soundDirection.line}
+            </p>
+            <p className="mt-6 text-sm text-rd-chrome">{chapter.soundDirection.genres}</p>
           </FadeIn>
         </section>
       )}
@@ -156,8 +170,12 @@ export default function AscensionPage() {
       {/* 8. Style direction */}
       {chapter.styleDirection && (
         <section data-cue="lasers" data-fog-cap aria-label="Style direction">
-          <div className={section}>
-            <p className={`${display} max-w-[18ch] text-rd-white`}>{chapter.styleDirection.line}</p>
+          <div className={`${section} flex flex-col gap-10 md:gap-16`}>
+            {chapter.styleDirection.lines.map((line) => (
+              <p key={line} className={`${display} max-w-[18ch] text-rd-white`}>
+                {line}
+              </p>
+            ))}
           </div>
           <Marquee items={chapter.styleDirection.words} cue="lasers" />
         </section>
@@ -169,6 +187,7 @@ export default function AscensionPage() {
           <h2 id="guest-title" className={heading}>
             Guest code
           </h2>
+          {isPublic(chapter.guestCodeIntro) && <p className="mt-6 text-rd-chrome">{chapter.guestCodeIntro}</p>}
           <RevealLines lines={chapter.guestCode} className={`${stanza} mt-10`} />
           <p className={`${display} mt-24 max-w-[18ch] text-rd-white md:mt-32`}>
             The crowd is not an audience. The crowd is the artwork.
