@@ -1,12 +1,30 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LaserGrid } from "@/components/atmosphere/LaserGrid";
-import { LaserRig } from "@/components/atmosphere/LaserRig";
-import { fontsReady, gsap, MOTION_OK, scheduleRefresh, ScrollTrigger } from "@/lib/motion";
+import { afterFirstPaint } from "@/lib/motion";
 import { setIntensity } from "@/lib/pulse";
+import "@/components/atmosphere/laser-rig.css";
 import "./motion.css";
+
+/** The rig's static state, identical to what LaserRig renders before WebGL starts. */
+function StaticFog() {
+  return (
+    <div data-state="static" className="rd-rig pointer-events-none absolute inset-0">
+      <div className="rd-rig-fallback absolute inset-0">
+        <div className="rd-rig-fog absolute inset-0" />
+      </div>
+    </div>
+  );
+}
+
+// Rig code is its own chunk, loaded only after first paint.
+const LaserRig = dynamic(() => import("@/components/atmosphere/LaserRig").then((m) => m.LaserRig), {
+  ssr: false,
+  loading: StaticFog,
+});
 
 export type Cue = "void" | "fog" | "grid" | "lasers" | "flare" | "hero";
 
@@ -15,46 +33,49 @@ export type Cue = "void" | "fog" | "grid" | "lasers" | "flare" | "hero";
  * one WebGL canvas). The rig is always on; cues only shift its beam strength
  * and fog density (plus the grid and flare overlays), easing over ~1.2s.
  * Sections declare data-cue; the first one on the page is the starting cue.
- * Triggers are rebuilt on every route change. Reduced motion: static "void".
+ * Cue changes come from an IntersectionObserver line at 55% of the viewport
+ * (no ScrollTrigger), rebuilt on every route change. The rig starts after
+ * first paint and fades in. Reduced motion: static "void".
  */
 export function Atmosphere() {
   const ref = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
+  const [live, setLive] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    afterFirstPaint().then(() => !cancelled && setLive(true));
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     const layer = ref.current;
-    if (!layer) return;
+    if (!layer || !live) return;
     const setCue = (cue?: string) => {
       if (cue) layer.dataset.activeCue = cue;
     };
-    let cancelled = false;
-    const mm = gsap.matchMedia();
-    mm.add("(prefers-reduced-motion: reduce)", () => setCue("void"));
-    // Runs after the page's own motion setup (same fonts.ready queue, mounted
-    // earlier), so cue positions include pin spacers and final line wraps.
-    fontsReady().then(() => {
-      if (cancelled) return;
-      mm.add(MOTION_OK, () => {
-        setIntensity(1);
-        const blocks = [...document.querySelectorAll<HTMLElement>("main [data-cue]")];
-        setCue(blocks[0]?.dataset.cue ?? "void");
-        blocks.forEach((block) => {
-          ScrollTrigger.create({
-            trigger: block,
-            start: "top 55%",
-            end: "bottom 55%",
-            onEnter: () => setCue(block.dataset.cue),
-            onEnterBack: () => setCue(block.dataset.cue),
-          });
-        });
-        scheduleRefresh();
-      });
-    });
-    return () => {
-      cancelled = true;
-      mm.revert();
-    };
-  }, [pathname]);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setCue("void");
+      return;
+    }
+    setIntensity(1);
+    const blocks = [...document.querySelectorAll<HTMLElement>("main [data-cue]")];
+    setCue(blocks[0]?.dataset.cue ?? "void");
+    // A 1px band at 55% from the top: whichever block crosses it sets the cue.
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setCue((entry.target as HTMLElement).dataset.cue);
+        }
+      },
+      { rootMargin: "-55% 0px -45% 0px", threshold: 0 },
+    );
+    blocks.forEach((block) => io.observe(block));
+    return () => io.disconnect();
+  }, [pathname, live]);
 
   return (
     <div ref={ref} aria-hidden="true" data-active-cue="void" className="rd-atmo pointer-events-none fixed inset-0 -z-10">
@@ -62,7 +83,7 @@ export function Atmosphere() {
         <LaserGrid />
       </div>
       <div className="rd-cue-rig absolute inset-0">
-        <LaserRig fallback="fog" className="absolute inset-0" />
+        {live ? <LaserRig fallback="fog" className="absolute inset-0" /> : <StaticFog />}
       </div>
       <div className="rd-cue rd-cue-flare" />
     </div>

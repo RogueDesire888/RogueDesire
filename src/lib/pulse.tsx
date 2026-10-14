@@ -2,7 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import { site } from "@/config/site";
-import { ScrollTrigger } from "@/lib/motion";
+import { afterFirstPaint } from "@/lib/motion";
 
 /**
  * Pulse engine: one requestAnimationFrame loop that writes CSS variables on :root.
@@ -132,13 +132,18 @@ export function PulseProvider({ children }: { children?: ReactNode }) {
     let lastBar = -1;
     let barsSinceBurst = 0;
 
-    const scroll = ScrollTrigger.create({
-      onUpdate: (self) => {
-        velocity = Math.abs(self.getVelocity());
-        state.dir = self.direction < 0 ? -1 : 1;
-        lastScrollAt = performance.now();
-      },
-    });
+    // Scroll velocity (px/s) and direction from native scroll events, so the
+    // engine never needs ScrollTrigger.
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const now = performance.now();
+      const dy = window.scrollY - lastY;
+      const dt = Math.max(1, now - lastScrollAt);
+      velocity = dt < 200 ? Math.abs(dy) * (1000 / dt) : 0;
+      if (dy) state.dir = dy < 0 ? -1 : 1;
+      lastY = window.scrollY;
+      lastScrollAt = now;
+    };
 
     // Every write to :root invalidates style for the whole document, so values
     // are quantized to 2 decimals and only written when they change.
@@ -196,12 +201,19 @@ export function PulseProvider({ children }: { children?: ReactNode }) {
       if (lastBar < 0) triggerFogBurst(1); // one burst on load
     };
 
-    start();
-    reduced.addEventListener("change", start);
+    // The loop starts after first paint; until then the vars keep their CSS defaults.
+    let cancelled = false;
+    afterFirstPaint().then(() => {
+      if (cancelled) return;
+      window.addEventListener("scroll", onScroll, { passive: true });
+      start();
+      reduced.addEventListener("change", start);
+    });
     return () => {
+      cancelled = true;
       cancelAnimationFrame(raf);
       reduced.removeEventListener("change", start);
-      scroll.kill();
+      window.removeEventListener("scroll", onScroll);
     };
   }, []);
 

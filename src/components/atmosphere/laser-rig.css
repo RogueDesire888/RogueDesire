@@ -1,7 +1,22 @@
 /* LaserRig: static fallback until WebGL is confirmed and motion is allowed. */
-.rd-rig[data-state="static"] .rd-rig-canvas,
-.rd-rig[data-state="live"] .rd-rig-fallback {
+.rd-rig[data-state="static"] .rd-rig-canvas {
   display: none;
+}
+
+/* Motion starts after first paint: the canvas fades in over the static fog. */
+.rd-rig-canvas {
+  animation: rd-rig-in 600ms ease-out both;
+}
+
+.rd-rig[data-state="live"] .rd-rig-fallback {
+  opacity: 0;
+  transition: opacity 600ms ease-out;
+}
+
+@keyframes rd-rig-in {
+  from {
+    opacity: 0;
+  }
 }
 
 /* Reduced motion / no WebGL: a static low fog bank. */

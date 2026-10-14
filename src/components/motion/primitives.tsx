@@ -4,8 +4,6 @@ import { useRef, type ReactNode } from "react";
 import { gsap, useMotion } from "@/lib/motion";
 import { StanzaLine, Words } from "./text";
 
-const once = (trigger: Element, start = "top 75%") => ({ trigger, start, once: true });
-
 /** Paragraphs: opacity and a 12px rise, once. */
 export function FadeIn({
   children,
@@ -18,8 +16,8 @@ export function FadeIn({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   useMotion(ref, ({ el }) => {
-    gsap.from(el, { opacity: 0, y: 12, duration: 1, delay, ease: "power2.out", scrollTrigger: once(el, "top 85%") });
-  });
+    gsap.from(el, { opacity: 0, y: 12, duration: 1, delay, ease: "power2.out" });
+  }, { entrance: true });
   return (
     <div ref={ref} className={className}>
       {children}
@@ -51,9 +49,8 @@ export function FadeInStagger({
       duration,
       stagger,
       ease: blur ? "power3.out" : "power1.out",
-      scrollTrigger: once(el, "top 80%"),
     });
-  });
+  }, { entrance: true });
   return (
     <ul ref={ref} className={className}>
       {children}
@@ -76,7 +73,7 @@ export function RevealLines({
   const ref = useRef<HTMLParagraphElement>(null);
   useMotion(ref, ({ el }) => {
     const lineEls = el.querySelectorAll("[data-line]");
-    const tl = gsap.timeline({ scrollTrigger: once(el) });
+    const tl = gsap.timeline();
     tl.from(lineEls, { opacity: 0, y: 16, filter: "blur(6px)", duration: 0.9, stagger, ease: "power3.out" });
     lineEls.forEach((line, i) => {
       const glows = line.querySelectorAll("[data-glow]");
@@ -84,7 +81,7 @@ export function RevealLines({
       gsap.set(glows, { opacity: 0 });
       tl.to(glows, { opacity: 1, duration: 0.6, ease: "power2.out" }, i * stagger + 0.8);
     });
-  });
+  }, { entrance: true });
   return (
     <p ref={ref} className={className}>
       {lines.map((line) => (
@@ -127,7 +124,7 @@ export function GlitchResolve({ lines, className = "" }: { lines: string[]; clas
       const [red, blue] = line.querySelectorAll("[data-rgb]");
       const [top, bottom] = line.querySelectorAll("[data-slice]");
       gsap.set(base, { opacity: 0 });
-      const tl = gsap.timeline({ delay: i * 0.4, scrollTrigger: once(line, "top 80%") });
+      const tl = gsap.timeline({ delay: i * 0.4 });
       tl.set(base, { opacity: 0.45 })
         .set([red, blue, top, bottom], { opacity: 0.75 })
         .set(red, { x: -6 })
@@ -141,7 +138,7 @@ export function GlitchResolve({ lines, className = "" }: { lines: string[]; clas
         .to([red, blue, top, bottom], { opacity: 0, x: 0, duration: 0.07 })
         .to(base, { opacity: 1, duration: 0.07 }, "<");
     });
-  });
+  }, { entrance: true });
   return (
     <p ref={ref} className={className}>
       {lines.map((line) => (
@@ -173,11 +170,11 @@ export function LightSweep({ children }: { children: ReactNode }) {
   useMotion(ref, ({ el }) => {
     const beam = el.querySelector("[data-beam]");
     gsap
-      .timeline({ scrollTrigger: once(el, "top 80%") })
+      .timeline()
       .fromTo(beam, { x: "-45vw" }, { x: "105vw", duration: 1.5, ease: "power2.inOut" })
       .to(beam, { opacity: 1, duration: 0.35 }, 0)
       .to(beam, { opacity: 0, duration: 0.45 }, 1.05);
-  });
+  }, { entrance: true });
   return (
     <div ref={ref} className="relative">
       <div
@@ -204,12 +201,12 @@ export function NeonIgnite({ children, className = "" }: { children: ReactNode; 
   useMotion(ref, ({ el }) => {
     gsap.set(el, { opacity: 0 });
     gsap
-      .timeline({ scrollTrigger: once(el, "top 85%") })
+      .timeline()
       .to(el, { opacity: 0.55, duration: 0.15, ease: "none" })
       .to(el, { opacity: 0.15, duration: 0.13, ease: "none" })
       .to(el, { opacity: 0.9, duration: 0.24, ease: "none" })
       .to(el, { opacity: 1, duration: 0.18, ease: "none" });
-  });
+  }, { entrance: true });
   return (
     <div ref={ref} className={className}>
       {children}
