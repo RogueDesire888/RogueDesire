@@ -9,9 +9,9 @@ export default function Home() {
     <>
       <Hero />
       <Intro />
-      <Marquee text="Architects of Temporary Realities" direction={1} />
+      <Marquee text="Architects of Temporary Realities" direction={1} cue="lasers" />
       <Rules />
-      {next && <Marquee text={`Chapter ${next.number}: ${next.title}`} direction={-1} />}
+      {next && <Marquee text={`Chapter ${next.number}: ${next.title}`} direction={-1} cue="lasers" />}
       <ChapterDossier />
       <FutureRealities />
       <Closing />

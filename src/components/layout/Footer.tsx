@@ -9,7 +9,7 @@ export async function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-rd-chrome/15 text-rd-chrome">
+    <footer data-fog-cap className="border-t border-rd-chrome/15 text-rd-chrome">
       <div className="mx-auto flex max-w-[1600px] flex-col gap-12 px-4 py-16 md:flex-row md:justify-between md:px-8 md:py-20">
         <div className="flex flex-col gap-5">
           <Link href="/" aria-label="Rogue Desire home" className="block w-32">

@@ -31,7 +31,16 @@ function Group({ text }: { text: string }) {
  * One accessible copy (sr-only); the moving copies are aria-hidden.
  * Static under reduced motion; paused offscreen and with the tab.
  */
-export function Marquee({ text, direction = 1 }: { text: string; direction?: 1 | -1 }) {
+export function Marquee({
+  text,
+  direction = 1,
+  cue,
+}: {
+  text: string;
+  direction?: 1 | -1;
+  /** Atmosphere cue while the band is in view. */
+  cue?: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const pulse = usePulse();
@@ -83,7 +92,7 @@ export function Marquee({ text, direction = 1 }: { text: string; direction?: 1 |
   }, [direction, pulse]);
 
   return (
-    <div ref={ref} className="relative w-full overflow-hidden py-6 md:py-10">
+    <div ref={ref} data-cue={cue} data-fog-cap className="relative w-full overflow-hidden py-6 md:py-10">
       <p className="sr-only">{text}</p>
       <div ref={trackRef} aria-hidden="true" className="flex w-max will-change-transform">
         <Group text={text} />

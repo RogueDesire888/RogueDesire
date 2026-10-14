@@ -15,7 +15,7 @@ const hairline = "border-rd-chrome/20";
 
 export function Intro() {
   return (
-    <section data-fog-cap className={`${container} ${screen}`}>
+    <section data-cue="fog" data-fog-cap className={`${container} ${screen}`}>
       <h2 className={`${display} max-w-[16ch] text-rd-white`}>
         We do not organize parties.
         <Reveal as="span" variant="fade" delay={600} className="block text-rd-chrome">
@@ -57,7 +57,7 @@ const RULES = [
 
 export function Rules() {
   return (
-    <section data-fog-cap aria-label="The rules" className={container}>
+    <section data-cue="fog" data-fog-cap aria-label="The rules" className={container}>
       <ol>
         {RULES.map((rule) => (
           <li key={rule.numeral} className={screen}>
@@ -106,6 +106,7 @@ export function ChapterDossier() {
   return (
     <section
       data-fog-cap
+      data-cue="lasers"
       data-chapter={chapter.slug}
       aria-labelledby="dossier-title"
       className={`${container} ${screen}`}
@@ -158,7 +159,7 @@ export function FutureRealities() {
   if (concepts.length === 0) return null;
 
   return (
-    <section data-fog-cap aria-labelledby="future-title" className={`${container} py-24 md:py-32`}>
+    <section data-cue="fog" data-fog-cap aria-labelledby="future-title" className={`${container} py-24 md:py-32`}>
       <h2 id="future-title" className="font-display text-3xl leading-[1.08] font-semibold text-rd-white md:text-4xl">
         Future realities
       </h2>
@@ -197,7 +198,7 @@ export function FutureRealities() {
 
 export function Closing() {
   return (
-    <section data-fog-cap className={`${container} ${screen} flex flex-col items-center text-center`}>
+    <section data-cue="flare" data-fog-cap className={`${container} ${screen} flex flex-col items-center text-center`}>
       <p className={`${display} max-w-[18ch] text-rd-white`}>
         The crowd is not an audience. The crowd is the artwork.
       </p>
