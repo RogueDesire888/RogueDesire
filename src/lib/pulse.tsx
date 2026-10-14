@@ -23,6 +23,34 @@ export function usePulse(): { readonly current: PulseState } {
   return handle;
 }
 
+/**
+ * Fog machine bursts. A burst is a plume rising from a point on the bottom
+ * edge (x in 0..1), living BURST_MS. At most 2 are active; the oldest drops.
+ * The pulse loop fires one on load and one every 16 bars.
+ */
+export type FogBurst = { x: number; start: number; intensity: number };
+export const BURST_MS = 8000;
+const bursts: FogBurst[] = [];
+
+const prefersReduced = () =>
+  typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/** Fire a fog burst (intensity 0 to 1.5). No-op under reduced motion. */
+export function triggerFogBurst(intensity = 1) {
+  if (prefersReduced()) return;
+  const now = performance.now();
+  for (let i = bursts.length - 1; i >= 0; i--) if (now - bursts[i].start > BURST_MS) bursts.splice(i, 1);
+  if (bursts.length >= 2) bursts.shift();
+  bursts.push({ x: 0.1 + Math.random() * 0.8, start: now, intensity: Math.min(1.5, Math.max(0, intensity)) });
+}
+
+/** Active bursts for the laser rig shader. */
+export function getFogBursts(): readonly FogBurst[] {
+  return bursts;
+}
+
+const BARS_PER_BURST = 16;
+
 /** Guardrail: never more than 3 pulses per second. */
 const MAX_BPM = 180;
 const VELOCITY_FULL = 3000;
@@ -38,6 +66,8 @@ export function PulseProvider({ children }: { children?: ReactNode }) {
     let velocity = 0;
     let lastScrollAt = 0;
     let lastWrite = 0;
+    let lastBar = -1;
+    let barsSinceBurst = 0;
 
     const scroll = ScrollTrigger.create({
       onUpdate: (self) => {
@@ -67,6 +97,14 @@ export function PulseProvider({ children }: { children?: ReactNode }) {
       last = now;
       state.beat = Math.exp(-((now % beatMs) / beatMs) * 5);
       state.bar = (now % (beatMs * 4)) / (beatMs * 4);
+      const barIndex = Math.floor(now / (beatMs * 4));
+      if (barIndex !== lastBar) {
+        if (lastBar >= 0 && ++barsSinceBurst >= BARS_PER_BURST) {
+          barsSinceBurst = 0;
+          triggerFogBurst(1);
+        }
+        lastBar = barIndex;
+      }
       const target = now - lastScrollAt < 120 ? Math.min(1, velocity / VELOCITY_FULL) : 0;
       state.energy =
         target > state.energy
@@ -91,6 +129,7 @@ export function PulseProvider({ children }: { children?: ReactNode }) {
       }
       last = performance.now();
       raf = requestAnimationFrame(tick);
+      if (lastBar < 0) triggerFogBurst(1); // one burst on load
     };
 
     start();
