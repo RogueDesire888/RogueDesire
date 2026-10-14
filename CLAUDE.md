@@ -141,7 +141,7 @@ Legal entity name, public contact email, city reveal timing, venue, date, hours,
 
 - [x] 1. Scaffold, tokens, fonts, layout shell, placeholder hero, brand linter, Vercel preview
 - [x] 2. Content layer: Zod schemas, chapter/artifact/transmission files, null gating
-- [ ] 3. Navbar + overlay menu, Footer, buttons, section primitives
+- [x] 3. Navbar + overlay menu, Footer, buttons, section primitives
 - [ ] 4. Home
 - [ ] 5. Manifesto
 - [ ] 6. Chapters index + Chapter 001 with chapter theming
@@ -162,5 +162,7 @@ Home hero (src/app/page.tsx + src/components/home/hero.css):
 - Spin speed: `--spin-duration` (default 14s) in `:root` in globals.css. That is the only place to change it.
 - Reduced motion: no spin, no pulse, wordmark static facing forward.
 - Source PNGs (3840x1648) are kept out of the repo; WebPs were generated with sharp at max 2560px.
+
+Navigation (Task 3): routes live in `src/config/nav.ts`. Navbar, menu overlay, and footer render only `live: true` routes; set a page live there when it ships (Privacy is in `legalRoutes`). Wordmark sizes: `<Wordmark size="sm" />` uses wordmark-sm.webp (480px) for nav/footer, "lg" the full asset. Buttons: `src/components/ui/Button.tsx` (primary, secondary, text). Stacking: nav z-30, menu overlay z-40, global Grain z-50.
 
 Notes: CSS Modules do not work with the scaffolded Turbopack Tailwind rule in next.config.ts; use plain prefixed CSS files (see src/components/atmosphere/laser-grid.css). Tailwind font utilities: font-sans, font-title. Content imports use the `@content/*` alias; render optional fields only through `isPublic()` from src/lib/content.ts.
