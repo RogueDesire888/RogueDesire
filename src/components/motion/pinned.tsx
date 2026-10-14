@@ -33,7 +33,7 @@ function pinnedTimeline(
 
 const stage = "flex flex-col justify-center md:min-h-svh";
 
-/** Line A dims and blurs while line B builds word by word with accent glow. Pins ~150vh. */
+/** Line A dims (to 35%) and blurs while line B builds word by word with accent glow. Pins ~150vh. */
 export function PinnedSwap({
   lineA,
   lineB,
@@ -46,7 +46,7 @@ export function PinnedSwap({
   const ref = useRef<HTMLDivElement>(null);
   useMotion(ref, ({ el, desktop }) => {
     const tl = pinnedTimeline(el, desktop, "150%", (p) => onProgress?.(p));
-    tl.to(el.querySelector("[data-a]"), { opacity: 0.15, filter: "blur(3px)", duration: 1 }).from(
+    tl.to(el.querySelector("[data-a]"), { opacity: 0.35, filter: "blur(2px)", duration: 1 }).from(
       el.querySelectorAll("[data-b] [data-word]"),
       { opacity: 0, y: 10, filter: "blur(4px)", duration: 0.5, stagger: 0.22 },
       0.25,
