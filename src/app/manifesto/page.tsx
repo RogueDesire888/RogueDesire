@@ -89,7 +89,7 @@ export default function ManifestoPage() {
 
       <section data-cue={opening?.cue} className="relative flex min-h-svh items-center justify-center px-4">
         {opening && (
-          <h1 className="rd-manifesto-opening max-w-[16ch] text-center text-[clamp(2.75rem,8vw,7.5rem)] leading-[1.02] font-medium tracking-[-0.02em] text-balance text-rd-white">
+          <h1 className="rd-manifesto-opening max-w-[16ch] text-center font-display text-[clamp(3rem,8.5vw,8rem)] leading-[1.08] font-semibold tracking-[-0.005em] text-balance text-rd-white">
             {opening.text}
           </h1>
         )}
@@ -116,7 +116,7 @@ export default function ManifestoPage() {
               </div>
             )}
             <FadeIn delay={0.8} className="flex flex-col items-center">
-              <p className="mt-8 text-xl text-rd-white md:text-2xl">{signoff.text}</p>
+              <p className="mt-8 font-display text-3xl leading-[1.08] font-semibold text-rd-white md:text-4xl">{signoff.text}</p>
               <SignalCta className="mt-12" />
             </FadeIn>
           </footer>

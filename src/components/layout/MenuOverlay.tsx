@@ -91,7 +91,7 @@ export function MenuOverlay({ open, pathname, onClose }: MenuOverlayProps) {
                   href={route.href}
                   onClick={onClose}
                   aria-current={current ? "page" : undefined}
-                  className="rd-overlay-link font-title text-3xl font-bold tracking-[0.18em] text-rd-chrome uppercase sm:text-4xl md:text-6xl"
+                  className="rd-overlay-link font-display text-5xl leading-[1.08] font-semibold text-rd-chrome sm:text-6xl md:text-7xl"
                 >
                   {route.label}
                 </Link>

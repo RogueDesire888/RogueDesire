@@ -24,7 +24,7 @@ export function Intro() {
       </h2>
       <p className="mt-10 max-w-[48ch] text-rd-chrome">
         Rogue Desire is an electronic music experience told in chapters. Each one is built for a
-        single night, then it&apos;s gone.
+        single night, then it’s gone.
       </p>
       {isLive(MANIFESTO_HREF) && (
         <div className="mt-10">
@@ -41,7 +41,7 @@ const RULES = [
   {
     numeral: "I",
     statement: "Every chapter happens once.",
-    supporting: "One night. One world. When the lights come up, it's gone.",
+    supporting: "One night. One world. When the lights come up, it’s gone.",
   },
   {
     numeral: "II",
@@ -113,7 +113,7 @@ export function ChapterDossier() {
         <p className="text-xs tracking-[0.35em] text-rd-chrome">{chapter.code}</p>
         <h2
           id="dossier-title"
-          className="mt-8 max-w-full font-title text-[clamp(2.25rem,9vw,7.5rem)] font-bold leading-none tracking-[0.12em] text-rd-white uppercase"
+          className="mt-8 max-w-full font-display text-[clamp(3.5rem,12vw,9rem)] leading-[1.08] font-semibold tracking-[-0.005em] text-rd-white"
           style={{
             textShadow:
               "0 0 12px color-mix(in srgb, var(--accent-glow) 60%, transparent), 0 0 40px color-mix(in srgb, var(--accent) 45%, transparent)",
@@ -162,7 +162,7 @@ export function FutureRealities() {
 
   return (
     <section aria-labelledby="future-title" className={`${container} py-24 md:py-32`}>
-      <h2 id="future-title" className="text-lg font-medium text-rd-white">
+      <h2 id="future-title" className="font-display text-3xl leading-[1.08] font-semibold text-rd-white md:text-4xl">
         Future realities
       </h2>
       <ul className={`mt-8 border-b ${hairline}`}>
@@ -174,7 +174,7 @@ export function FutureRealities() {
               className={`flex flex-col gap-1 border-t ${hairline} py-5 sm:flex-row sm:items-baseline sm:gap-8`}
             >
               <span className="w-12 shrink-0 text-sm text-accent">{c.number}</span>
-              <h3 className="font-title text-lg font-bold tracking-[0.16em] text-accent uppercase sm:w-64 sm:shrink-0">
+              <h3 className="font-display text-3xl leading-[1.08] font-semibold text-accent sm:w-64 sm:shrink-0">
                 {c.title}
               </h3>
               <p className="text-rd-chrome">{c.line}</p>
@@ -204,7 +204,7 @@ export function Closing() {
       <p className={`${display} max-w-[18ch] text-rd-white`}>
         The crowd is not an audience. The crowd is the artwork.
       </p>
-      <p className="mt-8 max-w-[65ch] text-rd-chrome">
+      <p className="mt-8 max-w-[40ch] font-display text-2xl leading-[1.25] font-semibold text-rd-chrome md:text-3xl">
         Enter with curiosity. Leave with a story. Keep the evidence.
       </p>
       <SignalCta className="mt-12" />

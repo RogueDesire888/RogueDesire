@@ -42,7 +42,7 @@ export function Hero() {
           </div>
         </div>
       </div>
-      <p className="relative mt-6 px-4 text-lg font-medium tracking-wide text-rd-white sm:text-xl md:mt-3">
+      <p className="relative mt-6 px-4 font-display text-3xl leading-[1.08] font-semibold text-rd-white sm:text-4xl md:mt-3">
         {site.tagline}
       </p>
       <p className="relative mt-3 max-w-[34ch] text-balance px-4 text-base leading-relaxed text-rd-chrome sm:text-lg md:max-w-[70ch]">
