@@ -19,9 +19,9 @@ export const routes: NavRoute[] = [
   { label: "Chapter 001: Ascension", href: "/chapters/ascension", live: true, unlisted: true },
   { label: "Archive", href: "/archive", live: false, primary: true },
   { label: "Transmissions", href: "/transmissions", live: false },
-  { label: "Artifacts", href: "/artifacts", live: false, primary: true },
+  { label: "Artifacts", href: "/artifacts", live: true, primary: true },
   { label: "Collective", href: "/collective", live: false },
-  { label: "Yearbook", href: "/yearbook", live: false },
+  { label: "Yearbook", href: "/yearbook", live: true },
   { label: "Enter the Circle", href: "/circle", live: true },
 ];
 
