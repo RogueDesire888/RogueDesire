@@ -12,7 +12,7 @@ export type NavRoute = {
 
 export const routes: NavRoute[] = [
   { label: "Home", href: "/", live: true },
-  { label: "Manifesto", href: "/manifesto", live: false, primary: true },
+  { label: "Manifesto", href: "/manifesto", live: true, primary: true },
   { label: "Chapters", href: "/chapters", live: false, primary: true },
   { label: "Archive", href: "/archive", live: false, primary: true },
   { label: "Transmissions", href: "/transmissions", live: false },
