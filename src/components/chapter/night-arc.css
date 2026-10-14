@@ -1,6 +1,7 @@
-/* Night arc focus: only while motion is live. Static: every phase fully visible. */
+/* Night arc focus: only while motion is live. Static: every phase fully visible.
+   Inactive phases stay at 0.6 so chrome text still clears AA on the void. */
 .rd-arc[data-live="true"] [data-phase] {
-  opacity: 0.32;
+  opacity: 0.6;
   transition: opacity 700ms ease;
 }
 

@@ -96,13 +96,13 @@ export function RevealLines({
   );
 }
 
-/** Words brighten from 20% to full as the block scrolls through the middle of the viewport. */
+/** Words brighten from 50% (still AA on the void) to full as the block scrolls through the middle of the viewport. */
 export function ScrubWords({ text, className = "" }: { text: string; className?: string }) {
   const ref = useRef<HTMLParagraphElement>(null);
   useMotion(ref, ({ el }) => {
     gsap.fromTo(
       el.querySelectorAll("[data-word]"),
-      { opacity: 0.2 },
+      { opacity: 0.5 },
       {
         opacity: 1,
         stagger: 0.1,
