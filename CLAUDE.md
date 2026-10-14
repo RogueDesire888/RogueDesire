@@ -99,7 +99,7 @@ Type:
 Motion and atmosphere:
 - Black void, grain, fog, laser grid, violet glow. Glow is seasoning, not the system.
 - Motion kit (gsap + ScrollTrigger, registered once in `src/lib/motion.ts`; use `useMotion(ref, setup)` and `usePrefersReducedMotion()`):
-  - Primitives in `src/components/motion/`: FadeIn, RevealLines (optional glowWords, stagger), ScrubWords, GlitchResolve, LightSweep, NeonIgnite (primitives.tsx); PinnedSwap, PinnedDissolve, BeatWords (pinned.tsx); Atmosphere (data-cue blocks: void, fog, grid, flare); CursorGlow (site-wide, fine pointer desktop only).
+  - Primitives in `src/components/motion/`: FadeIn, RevealLines (optional glowWords, stagger), ScrubWords, GlitchResolve, LightSweep, NeonIgnite (primitives.tsx); PinnedSwap, PinnedDissolve, BeatWords (pinned.tsx); Atmosphere (data-cue blocks: void, fog, grid, lasers, flare); CursorGlow (site-wide, fine pointer desktop only).
   - Paragraphs only ever get FadeIn (a LightSweep may precede it).
   - Choreography is data: blocks declare `motion` and `cue` (see content/manifesto.ts).
 - Motion setup waits for `document.fonts.ready` before creating ScrollTriggers, then refreshes once (`scheduleRefresh`), so pins measure the final face.
@@ -110,6 +110,11 @@ Motion and atmosphere:
   - No pinning under 768px: the same effect plays as an in-view sequence.
   - No flashes brighter than a soft glow, never more than 3 per second (BeatWords pulses are throttled; NeonIgnite flickers twice).
   - Fixed atmosphere layers sit at z-index -10 between the html background and content; body is transparent for this.
+- Pulse engine (`src/lib/pulse.tsx`, PulseProvider in the root layout): one rAF loop writes --beat (per-beat envelope, BPM from `site.bpm`, capped at 180), --bar, --energy (scroll velocity, decays over ~1.5s), --scroll-dir on :root. CSS vars update at ~30Hz and only on 2-decimal changes (each :root write restyles the whole page); JS consumers read live values via `usePulse()`.
+- LaserRig (`src/components/atmosphere/LaserRig.tsx`): raw WebGL fragment shader, beams + fbm haze, colors from --accent/--accent-glow, beam count and sweep follow --energy. Used in the home hero (screen blend) and the Atmosphere "lasers" cue. Static LaserGrid fallback (none in the hero, where the scene image is the fallback).
+- Beat-reactive CSS: `.rd-text-glow` (display text glow), `.rd-beat-glow` (primary button), hero scene and wordmark brightness/scale in hero.css.
+- Marquee (`src/components/motion/Marquee.tsx`): outlined display text band, speed x(1 + energy*4), follows scroll direction, skew up to 6deg.
+- Pulse guardrails: no full-screen flashes, no strobing. Beat-driven brightness changes max +/-15%. Never more than 3 pulses per second. Reduced motion: pulse vars fixed at 0, no WebGL (static fallback), marquees static. Pause every loop when the tab is hidden or the element is offscreen. Performance target: 60fps on a modern laptop, 45fps+ under Chrome 4x CPU throttle at 375px.
 - Everything respects `prefers-reduced-motion`. Atmosphere layers are aria-hidden and pointer-events none.
 - Performance first: CSS/SVG over canvas libraries, lazy-load below-the-fold media.
 
