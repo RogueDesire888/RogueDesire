@@ -1,8 +1,12 @@
 #!/usr/bin/env node
-// Composes the finished Artifact 001 flyer: wordmark on top, "Ascension" and
-// "Chapter 001" below, on the untouched art. The canvas is extended with the
-// art's own near-black so both sit in true dark bands with 6% margins.
-// Text is converted to SVG paths with opentype.js (no system fonts needed).
+// Composes the finished Artifact 001 flyer at a true 5x7: the art full width
+// and vertically centered on its own black, dark scrims over its top and
+// bottom, the wordmark and "Ascension" / "Chapter 001" overlaid on the scrims,
+// all inside a 6% safe margin. Text is drawn as opentype.js paths.
+// The source art is large and gitignored: put it at art/ch001-flyer-art.png
+// (or pass FLYER_ART=/path/to/art.png).
+// Outputs: public/artifacts/ch001-flyer.webp (site) and the full-resolution
+// PNG to ~/Desktop/Rogue-Desire-Artifact-001-flyer.png (not committed).
 // Usage: node scripts/compose-flyer.mjs
 import fs from "node:fs";
 import os from "node:os";
@@ -11,7 +15,11 @@ import opentype from "opentype.js";
 import sharp from "sharp";
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
-const ART = path.join(ROOT, "art/ch001-flyer-art.png");
+const ART = process.env.FLYER_ART ?? path.join(ROOT, "art/ch001-flyer-art.png");
+if (!fs.existsSync(ART)) {
+  console.error(`Flyer art not found at ${ART}.\nPut the source PNG there (it is gitignored) or run with FLYER_ART=/path/to/art.png.`);
+  process.exit(1);
+}
 const WORDMARK = path.join(ROOT, "public/brand/wordmark.webp");
 const GRENZE = path.join(ROOT, "scripts/fonts/GrenzeGotisch[wght].ttf");
 const HANKEN = path.join(ROOT, "scripts/fonts/HankenGrotesk[wght].ttf");
@@ -21,7 +29,6 @@ const VIOLET = { r: 0x8b, g: 0x2c, b: 0xff };
 const WHITE = "#F5F5F7";
 const CHROME = "#C8CEDA";
 const MARGIN = 0.06;
-const GAP = 40;
 /**
  * Lays out glyphs directly (cmap + kerning), skipping opentype.js shaping:
  * its shaper cannot apply some substitution lookups in these fonts, and plain
@@ -79,73 +86,66 @@ async function glow(buf, w, h, sigma, opacity) {
   return { buf: layer, pad };
 }
 
-const art = sharp(ART);
-const { width: W, height: artH } = await art.metadata();
-
-// Dark bands of the art (rows darker than 18/255 on average).
-const { data: grey } = await sharp(ART).greyscale().raw().toBuffer({ resolveWithObject: true });
-const rowMean = (y) => { let s = 0; for (let x = 0; x < W; x++) s += grey[y * W + x]; return s / W; };
-let darkTop = 0; while (rowMean(darkTop) < 18) darkTop++;
-let darkBottom = artH - 1; while (rowMean(darkBottom) < 18) darkBottom--;
-const bottomBand = artH - 1 - darkBottom;
+const { width: W, height: artH } = await sharp(ART).metadata();
+const H = Math.round((W * 7) / 5); // true 5x7
+const artTop = Math.round((H - artH) / 2);
+const margin = Math.round(MARGIN * H);
 const { data: px } = await sharp(ART).extract({ left: 0, top: 0, width: 1, height: 1 }).raw().toBuffer({ resolveWithObject: true });
 const background = { r: px[0], g: px[1], b: px[2], alpha: 1 };
+const bg = `rgb(${px[0]},${px[1]},${px[2]})`;
 
 // Elements.
-const wordmarkW = Math.round(W * 0.62);
+const wordmarkW = Math.round(W * 0.58);
 const wordmarkBuf = await sharp(WORDMARK).resize({ width: wordmarkW }).png().toBuffer();
 const wordmarkH = (await sharp(wordmarkBuf).metadata()).height;
 const title = await textToWidth(loadFont(GRENZE, 600), "Ascension", Math.round(W * 0.8), WHITE);
 const chapter = await textPng(loadFont(HANKEN, 400), "Chapter 001", Math.round(W * 0.028), CHROME, 0.3);
 const titleGap = Math.round(title.h * 0.18);
 const blockH = title.h + titleGap + chapter.h;
-
-// Solve the canvas height so both bands fit with 6% margins.
-let H = artH;
-let topPad = 0;
-let bottomPad = 0;
-for (let i = 0; i < 20; i++) {
-  topPad = Math.max(0, Math.ceil(MARGIN * H + wordmarkH + GAP - darkTop));
-  bottomPad = Math.max(0, Math.ceil(GAP + blockH + MARGIN * H - bottomBand));
-  H = topPad + artH + bottomPad;
-}
-const margin = Math.round(MARGIN * H);
 const wordmarkTop = margin;
-const titleTop = topPad + darkBottom + 1 + GAP;
-const chapterTop = titleTop + title.h + titleGap;
+const chapterTop = H - margin - chapter.h;
+const titleTop = chapterTop - titleGap - title.h;
+
+// Scrims (black to transparent) over the art: ~22% top and ~28% bottom,
+// stretched where needed so they always reach past the type they sit under.
+const topScrimEnd = Math.max(artTop + artH * 0.22, wordmarkTop + wordmarkH + 60);
+const bottomScrimStart = Math.min(artTop + artH * (1 - 0.28), titleTop - 80);
+const scrims = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
+  <defs>
+    <linearGradient id="t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${bg}" stop-opacity="1"/><stop offset="0.55" stop-color="${bg}" stop-opacity="0.82"/><stop offset="1" stop-color="${bg}" stop-opacity="0"/></linearGradient>
+    <linearGradient id="b" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${bg}" stop-opacity="1"/><stop offset="0.55" stop-color="${bg}" stop-opacity="0.82"/><stop offset="1" stop-color="${bg}" stop-opacity="0"/></linearGradient>
+  </defs>
+  <rect x="0" y="0" width="${W}" height="${topScrimEnd}" fill="url(#t)"/>
+  <rect x="0" y="${bottomScrimStart}" width="${W}" height="${H - bottomScrimStart}" fill="url(#b)"/>
+</svg>`);
 
 const wmGlow = await glow(wordmarkBuf, wordmarkW, wordmarkH, 22, 0.6);
 const tightGlow = await glow(title.buf, title.w, title.h, 8, 0.85);
 const wideGlow = await glow(title.buf, title.w, title.h, 30, 0.55);
 const cx = (w) => Math.round((W - w) / 2);
 
-const composed = await sharp(ART)
-  .extend({ top: topPad, bottom: bottomPad, left: 0, right: 0, background })
-  .png()
-  .toBuffer()
-  .then((b) =>
-    sharp(b)
-      .composite([
-        { input: wmGlow.buf, left: cx(wordmarkW) - wmGlow.pad, top: wordmarkTop - wmGlow.pad },
-        { input: wordmarkBuf, left: cx(wordmarkW), top: wordmarkTop },
-        { input: wideGlow.buf, left: cx(title.w) - wideGlow.pad, top: titleTop - wideGlow.pad },
-        { input: tightGlow.buf, left: cx(title.w) - tightGlow.pad, top: titleTop - tightGlow.pad },
-        { input: title.buf, left: cx(title.w), top: titleTop },
-        { input: chapter.buf, left: cx(chapter.w), top: chapterTop },
-      ])
-      .png({ compressionLevel: 9 })
-      .toBuffer(),
-  );
+const composed = await sharp({ create: { width: W, height: H, channels: 4, background } })
+  .composite([
+    { input: ART, left: 0, top: artTop },
+    { input: scrims, left: 0, top: 0 },
+    { input: wmGlow.buf, left: cx(wordmarkW) - wmGlow.pad, top: wordmarkTop - wmGlow.pad },
+    { input: wordmarkBuf, left: cx(wordmarkW), top: wordmarkTop },
+    { input: wideGlow.buf, left: cx(title.w) - wideGlow.pad, top: titleTop - wideGlow.pad },
+    { input: tightGlow.buf, left: cx(title.w) - tightGlow.pad, top: titleTop - tightGlow.pad },
+    { input: title.buf, left: cx(title.w), top: titleTop },
+    { input: chapter.buf, left: cx(chapter.w), top: chapterTop },
+  ])
+  .png({ compressionLevel: 9 })
+  .toBuffer();
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
-fs.writeFileSync(path.join(OUT_DIR, "ch001-flyer.png"), composed);
 await sharp(composed).resize({ height: 1400 }).webp({ quality: 86 }).toFile(path.join(OUT_DIR, "ch001-flyer.webp"));
 const desktop = path.join(os.homedir(), "Desktop/Rogue-Desire-Artifact-001-flyer.png");
 fs.writeFileSync(desktop, composed);
 
 console.log(JSON.stringify({
-  canvas: `${W}x${H}`, topPad, bottomPad, margin,
-  wordmark: { top: wordmarkTop, bottom: wordmarkTop + wordmarkH, artDarkBandEnds: topPad + darkTop },
-  title: { top: titleTop, bottom: chapterTop + chapter.h, limit: H - margin, widthPct: +((100 * title.w) / W).toFixed(1) },
-  saved: ["public/artifacts/ch001-flyer.png", "public/artifacts/ch001-flyer.webp", desktop],
+  canvas: `${W}x${H}`, artTop, margin,
+  wordmark: { top: wordmarkTop, bottom: wordmarkTop + wordmarkH, topScrimEnd: Math.round(topScrimEnd) },
+  title: { top: titleTop, bottom: chapterTop + chapter.h, limit: H - margin, bottomScrimStart: Math.round(bottomScrimStart), blockH },
+  saved: ["public/artifacts/ch001-flyer.webp", desktop],
 }, null, 1));
