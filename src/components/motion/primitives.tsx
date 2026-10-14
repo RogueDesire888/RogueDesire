@@ -27,6 +27,29 @@ export function FadeIn({
   );
 }
 
+/** Children fade in one after another (opacity and a 12px rise), once. */
+export function FadeInStagger({
+  children,
+  stagger = 0.2,
+  duration = 1,
+  className = "",
+}: {
+  children: ReactNode;
+  stagger?: number;
+  duration?: number;
+  className?: string;
+}) {
+  const ref = useRef<HTMLUListElement>(null);
+  useMotion(ref, ({ el }) => {
+    gsap.from(el.children, { opacity: 0, y: 12, duration, stagger, ease: "power1.out", scrollTrigger: once(el, "top 80%") });
+  });
+  return (
+    <ul ref={ref} className={className}>
+      {children}
+    </ul>
+  );
+}
+
 /** Stanza lines rise 16px from blur, staggered; optional glow words ignite after their line lands. */
 export function RevealLines({
   lines,

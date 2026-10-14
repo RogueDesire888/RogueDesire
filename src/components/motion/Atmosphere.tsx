@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import { LaserGrid } from "@/components/atmosphere/LaserGrid";
 import { LaserRig } from "@/components/atmosphere/LaserRig";
 import { fontsReady, gsap, MOTION_OK, scheduleRefresh, ScrollTrigger } from "@/lib/motion";
+import { setIntensity } from "@/lib/pulse";
 import "./motion.css";
 
 export type Cue = "void" | "fog" | "grid" | "lasers" | "flare" | "hero";
@@ -34,6 +35,7 @@ export function Atmosphere() {
     fontsReady().then(() => {
       if (cancelled) return;
       mm.add(MOTION_OK, () => {
+        setIntensity(1);
         const blocks = [...document.querySelectorAll<HTMLElement>("main [data-cue]")];
         setCue(blocks[0]?.dataset.cue ?? "void");
         blocks.forEach((block) => {
