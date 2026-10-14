@@ -30,25 +30,16 @@
   --accent-glow: var(--rd-violet-soft);
 }
 
+/* Unrevealed chapters get their accent override here only once revealed,
+   so their names never ship in the stylesheet. Planned accents:
+   003 green, 004 gold, 005 ice (see CLAUDE.md). */
 [data-chapter="eclipse"] {
   --accent: var(--rd-chrome);
   --accent-glow: var(--rd-violet);
 }
 
-[data-chapter="neon-garden"] {
-  --accent: var(--rd-green);
-  --accent-glow: var(--rd-green);
-}
 
-[data-chapter="mirage"] {
-  --accent: var(--rd-gold);
-  --accent-glow: var(--rd-gold);
-}
 
-[data-chapter="velocity"] {
-  --accent: var(--rd-ice);
-  --accent-glow: var(--rd-white);
-}
 
 @theme inline {
   --color-rd-black: var(--rd-black);

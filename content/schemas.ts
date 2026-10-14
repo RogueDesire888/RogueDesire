@@ -20,6 +20,8 @@ export const chapterSchema = z.object({
   title: z.string().min(1),
   line: z.string().min(1),
   status: z.enum(["concept", "upcoming", "past"]),
+  /** Unrevealed chapters never output title, line, element, or theme. */
+  revealed: z.boolean(),
   era: z.string().min(1),
   element: z.string().min(1),
   theme: z.string().min(1),

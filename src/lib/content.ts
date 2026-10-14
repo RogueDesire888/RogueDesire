@@ -34,6 +34,27 @@ export function getConceptChapters(): readonly Chapter[] {
   return chapters.filter((c) => c.status === "concept");
 }
 
+export function getRevealedChapters(): readonly Chapter[] {
+  return chapters.filter((c) => c.revealed);
+}
+
+/**
+ * Concept chapters safe to render. Unrevealed entries are stripped to their
+ * number at the source so their title, line, element, and theme never reach
+ * a component or the HTML.
+ */
+export type ConceptListing =
+  | { revealed: true; number: string; slug: string; title: string; line: string }
+  | { revealed: false; number: string };
+
+export function getConceptListing(): ConceptListing[] {
+  return getConceptChapters().map((c) =>
+    c.revealed
+      ? { revealed: true, number: c.number, slug: c.slug, title: c.title, line: c.line }
+      : { revealed: false, number: c.number },
+  );
+}
+
 export function getArtifacts(): readonly Artifact[] {
   return artifacts;
 }
