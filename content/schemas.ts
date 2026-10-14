@@ -5,9 +5,13 @@ const nullableText = z.string().trim().min(1).nullable();
 
 export const accentSchema = z.enum(["violet", "silver", "green", "gold", "ice"]);
 
+export const frequencyRole = z.enum(["threshold", "activation", "peak", "afterglow"]);
+
 export const frequencySchema = z.object({
   name: z.string().min(1),
-  role: z.enum(["threshold", "activation", "peak", "afterglow"]),
+  /** Chapter slug this booking belongs to. */
+  chapter: z.string().min(1),
+  role: frequencyRole,
   bio: nullableText,
   links: z.array(z.object({ label: z.string().min(1), url: z.url() })),
   imageApproved: z.boolean(),
@@ -39,6 +43,17 @@ export const chapterSchema = z.object({
   frequencies: z.array(frequencySchema),
   /** Artifact codes belonging to this chapter. */
   artifacts: z.array(z.string()),
+  // Chapter page content (revealed chapters only). Never times for the night arc.
+  longDescription: nullableText.optional(),
+  closingLine: nullableText.optional(),
+  meaning: z.array(z.string().min(1)).optional(),
+  palette: z.array(z.object({ name: z.string().min(1), token: z.string().regex(/^--rd-[a-z-]+$/) })).optional(),
+  soundDirection: nullableText.optional(),
+  styleDirection: z.object({ line: z.string().min(1), words: z.array(z.string().min(1)) }).optional(),
+  guestCode: z.array(z.string().min(1)).optional(),
+  nightArc: z
+    .array(z.object({ role: frequencyRole, name: z.string().min(1), mood: z.string().min(1), line: z.string().min(1) }))
+    .optional(),
 });
 
 export const artifactSchema = z.object({
