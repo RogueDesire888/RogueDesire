@@ -1,9 +1,9 @@
 // Crawl every internal link from the home page; check external links' rel.
 import { chromium } from "playwright";
-import { BASE } from "./common.mjs";
+import { BASE, CTX } from "./common.mjs";
 
 const browser = await chromium.launch();
-const page = await browser.newPage();
+const page = await browser.newPage(CTX);
 const seen = new Map(); // path -> status
 const external = new Map(); // href -> rel/target
 const queue = ["/"];

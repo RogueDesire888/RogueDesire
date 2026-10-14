@@ -20,3 +20,9 @@ export async function scrollThrough(page, step = 600, pause = 60) {
     await new Promise((r) => setTimeout(r, 1500));
   }, [step, pause]);
 }
+
+// Protected Vercel deployments: pass the project's automation bypass secret in
+// QA_BYPASS (never commit it). Spread into every browser context.
+export const CTX = process.env.QA_BYPASS
+  ? { extraHTTPHeaders: { "x-vercel-protection-bypass": process.env.QA_BYPASS, "x-vercel-set-bypass-cookie": "true" } }
+  : {};

@@ -1,12 +1,13 @@
 // Hero screenshots at 375x812, 390x844 and 1440x900 with the spin held at 0 and 180 degrees,
 // plus wordmark/tagline geometry and which scene file each size downloads.
 import { chromium } from "playwright";
+import { CTX, BASE } from "./common.mjs";
 const out = process.env.QA_OUT; const b = await chromium.launch();
 for (const [w, h, dpr] of [[375, 812, 3], [390, 844, 3], [1440, 900, 1]]) {
-  const c = await b.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: dpr, isMobile: w < 768, hasTouch: w < 768 });
+  const c = await b.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: dpr, isMobile: w < 768, hasTouch: w < 768, ...CTX });
   const p = await c.newPage(); const imgs = [];
-  p.on("response", r => { if (/hero-scene/.test(r.url())) imgs.push(r.url().replace("http://localhost:3001", "").slice(0, 80)); });
-  await p.goto("http://localhost:3001/", { waitUntil: "load" }); await new Promise(r => setTimeout(r, 2500));
+  p.on("response", r => { if (/hero-scene/.test(r.url())) imgs.push(r.url().replace(BASE, "").slice(0, 80)); });
+  await p.goto(BASE + "/", { waitUntil: "load" }); await new Promise(r => setTimeout(r, 2500));
   for (const deg of [0, 180]) {
     await p.addStyleTag({ content: `.rd-spin{animation:none!important;transform:rotateY(${deg}deg)!important}` });
     await new Promise(r => setTimeout(r, 300));

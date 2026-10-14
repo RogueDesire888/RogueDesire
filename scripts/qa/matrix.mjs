@@ -1,14 +1,14 @@
 // Browser x size x page matrix. Usage: node scripts/qa/matrix.mjs chromium|webkit|firefox
 import fs from "node:fs";
 import { chromium, firefox, webkit } from "playwright";
-import { BASE, PAGES, SIZES, scrollThrough, sleep } from "./common.mjs";
+import { BASE, PAGES, SIZES, scrollThrough, sleep, CTX } from "./common.mjs";
 
 const name = process.argv[2] ?? "chromium";
 const engine = { chromium, webkit, firefox }[name];
 const browser = await engine.launch();
 const rows = [];
 for (const size of SIZES) {
-  const ctx = await browser.newContext({ viewport: { width: size.width, height: size.height }, ...(size.isMobile && name !== "firefox" ? { isMobile: true, hasTouch: true } : {}) });
+  const ctx = await browser.newContext({ viewport: { width: size.width, height: size.height }, ...(size.isMobile && name !== "firefox" ? { isMobile: true, hasTouch: true } : {}), ...CTX });
   for (const path of PAGES) {
     const page = await ctx.newPage();
     const errors = [];

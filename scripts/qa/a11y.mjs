@@ -3,7 +3,7 @@
 import fs from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
 import { chromium } from "playwright";
-import { BASE, PAGES, scrollThrough, sleep } from "./common.mjs";
+import { BASE, PAGES, scrollThrough, sleep, CTX } from "./common.mjs";
 
 const browser = await chromium.launch();
 const out = { axe: [], keyboard: [], reduced: [], noJs: [] };
@@ -29,7 +29,7 @@ const unreadable = () => {
 };
 
 for (const [w, h] of [[1440, 900], [375, 812]]) {
-  const ctx = await browser.newContext({ viewport: { width: w, height: h } });
+  const ctx = await browser.newContext({ viewport: { width: w, height: h }, ...CTX });
   for (const path of PAGES) {
     const page = await ctx.newPage();
     await page.goto(BASE + path, { waitUntil: "load" });
@@ -44,7 +44,7 @@ for (const [w, h] of [[1440, 900], [375, 812]]) {
 }
 
 // Keyboard-only path: every focusable element reached, with a visible focus indicator.
-const kctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+const kctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, ...CTX });
 for (const path of ["/", "/manifesto", "/chapters/ascension", "/artifacts", "/circle"]) {
   const page = await kctx.newPage();
   await page.goto(BASE + path, { waitUntil: "load" });
@@ -75,7 +75,7 @@ await kctx.close();
 
 // Readability with reduced motion and with JavaScript disabled.
 for (const [mode, opts] of [["reduced", { reducedMotion: "reduce" }], ["noJs", { javaScriptEnabled: false }]]) {
-  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, ...opts });
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, ...opts, ...CTX });
   for (const path of PAGES) {
     const page = await ctx.newPage();
     await page.goto(BASE + path, { waitUntil: "load" });

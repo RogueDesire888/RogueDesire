@@ -1,10 +1,10 @@
 // Bytes shipped per page (first load, 1440, Chromium): JS total, largest assets, first-paint heavy assets.
 import fs from "node:fs";
 import { chromium } from "playwright";
-import { BASE, PAGES, sleep } from "./common.mjs";
+import { BASE, PAGES, sleep, CTX } from "./common.mjs";
 
 const browser = await chromium.launch();
-const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, ...CTX });
 const all = new Map();
 const perPage = [];
 for (const path of PAGES) {

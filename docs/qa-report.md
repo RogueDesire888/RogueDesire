@@ -26,6 +26,16 @@ All targets met. Four issues fixed (one truth leak, one no-JS readability bug, t
 - Keyboard (Home > Manifesto > Chapter 001 > Artifacts > Circle): every visible control reachable in DOM order (14 / 12 / 13 / 15 / 17 stops), all with a visible focus ring. The menu and the flyer lightbox trap Tab, close on Esc and return focus to their opener.
 - Reduced motion and JavaScript disabled: no text left hidden on any page. The manifesto opening is a CSS-only fade (runs without JS). The archive's "Opens after the night." line is a hover/focus hint under a visible "Sealed" label, always shown on touch screens.
 
+## Upgrade 1 re-run (dependencies)
+
+Branch `upgrade/deps`: playwright 1.64.0 to 1.64.1 (plus lockfile refresh), @types/node 20 to 26, ESLint 9 to 10, TypeScript 5.9 to 6.0 (7.0 reverted: no JavaScript API for typescript-eslint). Next, React, Tailwind, gsap, zod and next-mdx-remote were already current.
+
+- Full suite on the branch preview (`rogue-desire-6usdrfwaj`): crawl clean, 108 browser loads with 0 issues, axe 0, keyboard clean, reduced motion and no-JS readable. Gate also passed locally after each update.
+- Lighthouse mobile, same-machine A/B against `main` (local production builds, runs interleaved, medians of 3): Home 92 vs 92, Manifesto 93 vs 95, Artifacts 93 vs 92. LCP 3.3 / 2.9 / 3.1 s vs 3.3 / 2.8 / 3.3 s. Accessibility, Best Practices 100; SEO 100 excluding the expected preview noindex.
+- On Vercel the branch preview measured 85 / 85 / 87 (84 / 90 / 88 with the Vercel Toolbar blocked) against 89 / 93 / 93 on the current production deployment. First-party JS is byte-identical (256 KB); the gap is the Preview environment (toolbar script, cold caches), not the upgrade.
+- npm audit: 5 high before and after (braces, dev-only lint tooling, no fix released); 0 in production dependencies.
+- QA harness: `scripts/qa/run-all.mjs` added; the matrix now waits for the deferred rig (WebKit has no requestIdleCallback, so the old fixed 1.2s wait raced it).
+
 ## Task 10.2 re-run
 
 Tall mobile hero scene plus deferred motion startup (gsap, ScrollTrigger and the WebGL rig load by dynamic import after first paint; ScrollTrigger only on pages with pins or scrubs).
