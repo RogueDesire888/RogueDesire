@@ -170,7 +170,7 @@ Legal entity name, public contact email, city reveal timing, venue, date, hours,
 - [x] 3. Navbar + overlay menu, Footer, buttons, section primitives
 - [x] 4. Home
 - [x] 5. Manifesto
-- [ ] 6. Chapters index + Chapter 001 with chapter theming
+- [x] 6. Chapters index + Chapter 001 with chapter theming
 - [ ] 7. Enter the Circle form (UI first, backend when accounts exist)
 - [ ] 8. Artifacts, Yearbook, Transmissions, Archive, Collective
 - [ ] 9. SEO: metadata, OG images, sitemap, robots, JSON-LD, privacy page, 404
@@ -194,5 +194,7 @@ Navigation (Task 3): routes live in `src/config/nav.ts`. Navbar, menu overlay, a
 Home (Task 4.1): sections in `src/components/home/HomeSections.tsx` (Intro, Rules, ChapterDossier, FutureRealities, Closing); hero in `Hero.tsx`. Chapter data comes only from `getNextChapter()` / `getConceptChapters()`. CTAs gate on `isLive(href)` from nav.ts. Reveals: `src/components/ui/Reveal.tsx` ("rise" for the Chapter 001 dossier, "fade" with delay for intro line 2). Redaction bars: `src/components/ui/Redaction.tsx`, width seeded from a string so it is stable. Accent overrides for unrevealed chapters are left out of globals.css until reveal so their names never ship; add `[data-chapter="<slug>"]` when a chapter is revealed.
 
 Manifesto (Task 5): text lives in `content/manifesto.ts` as typed blocks (opening, statement, stanza, paragraph, signoff); never edit its words. Page: `src/app/manifesto/page.tsx` maps blocks to motion primitives; `ScrollProgress` is the desktop accent progress line. The Atmosphere lives in the root layout (after main) so its cue triggers are measured after pin spacers exist. Shared styles: `src/components/ui/styles.ts` (container, display). Closing CTA: `src/components/ui/SignalCta.tsx`.
+
+Chapters (Task 6): `/chapters` (Year One index: symbols, Chapter 001 feature, concept listing via `getConceptListing()`) and `/chapters/ascension` (hero, description, meaning BeatWords, element and palette, The night, sound, Artifact 001, style direction marquee, guest code, access). Chapter page content lives on the chapter entry (longDescription, closingLine, meaning, palette, soundDirection, styleDirection, guestCode, nightArc); never publish times for night phases. `NightArc` (`src/components/chapter/NightArc.tsx`) plays the arc on the atmosphere (intensity 0.2 / 0.5 / 1.0 / 0.3, fog / lasers / lasers / fog, one burst at Peak); desktop pins ~200vh. `Disclosure` (`src/components/chapter/Disclosure.tsx`) is the shared disclosure rows component (home dossier and chapter access). Frequencies carry a `chapter` slug; `getFrequencies(slug, role)`. Unlisted live routes (`unlisted: true` in nav.ts) are linkable via isLive() but not shown in nav, menu, or footer.
 
 Notes: CSS Modules do not work with the scaffolded Turbopack Tailwind rule in next.config.ts; use plain prefixed CSS files (see src/components/atmosphere/laser-grid.css). Tailwind font utilities: font-sans, font-display (defined with @utility in globals.css). Content imports use the `@content/*` alias; render optional fields only through `isPublic()` from src/lib/content.ts.
