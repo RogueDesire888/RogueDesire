@@ -56,9 +56,14 @@
   --color-accent: var(--accent);
   --color-accent-glow: var(--accent-glow);
 
-  /* Utilities: font-sans (body/UI), font-title (chapter titles) */
+  /* Utilities: font-sans (body/UI). font-display is defined below with @utility. */
   --font-sans: var(--font-body);
-  --font-title: var(--font-chapter);
+}
+
+/* Display face: Grenze Gotisch. Defined as a utility rather than a theme key so
+   it can read next/font's --font-display without a self-referencing variable. */
+@utility font-display {
+  font-family: var(--font-display), serif;
 }
 
 html {
