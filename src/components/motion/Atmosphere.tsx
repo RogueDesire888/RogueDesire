@@ -2,10 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import { LaserGrid } from "@/components/atmosphere/LaserGrid";
+import { LaserRig } from "@/components/atmosphere/LaserRig";
 import { fontsReady, gsap, MOTION_OK, scheduleRefresh, ScrollTrigger } from "@/lib/motion";
 import "./motion.css";
 
-export type Cue = "void" | "fog" | "grid" | "flare";
+export type Cue = "void" | "fog" | "grid" | "lasers" | "flare";
 
 /**
  * Fixed layer behind page content. Blocks declare data-cue; the active cue
@@ -53,6 +54,9 @@ export function Atmosphere({ initial = "void" }: { initial?: Cue }) {
       <div className="rd-cue rd-cue-fog" />
       <div className="rd-cue rd-cue-grid">
         <LaserGrid />
+      </div>
+      <div className="rd-cue rd-cue-lasers">
+        <LaserRig className="absolute inset-0" />
       </div>
       <div className="rd-cue rd-cue-flare" />
     </div>

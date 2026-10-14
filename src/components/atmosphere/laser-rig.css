@@ -1,0 +1,5 @@
+/* LaserRig: static fallback until WebGL is confirmed and motion is allowed. */
+.rd-rig[data-state="static"] .rd-rig-canvas,
+.rd-rig[data-state="live"] .rd-rig-fallback {
+  display: none;
+}

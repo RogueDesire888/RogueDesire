@@ -15,6 +15,10 @@
   opacity: 0.25;
 }
 
+.rd-atmo[data-active-cue="lasers"] .rd-cue-lasers {
+  opacity: 0.75;
+}
+
 .rd-cue-fog::before,
 .rd-cue-fog::after {
   content: "";

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /** Atmosphere cue a block sets while it is in the middle of the viewport. */
-const cue = z.enum(["void", "fog", "grid", "flare"]).optional();
+const cue = z.enum(["void", "fog", "grid", "lasers", "flare"]).optional();
 
 export const manifestoBlockSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("opening"), text: z.string().min(1), cue }),
@@ -34,7 +34,7 @@ export type ManifestoBlock = z.infer<typeof manifestoBlockSchema>;
 
 /** The Rogue Desire manifesto. Text is final: do not edit words. */
 export const manifesto = z.array(manifestoBlockSchema).parse([
-  { type: "opening", text: "We are architects of temporary realities.", cue: "grid" },
+  { type: "opening", text: "We are architects of temporary realities.", cue: "lasers" },
   {
     type: "paragraph",
     text: "Rogue Desire was born from the belief that some moments are too powerful to disappear.",
@@ -58,7 +58,7 @@ export const manifesto = z.array(manifestoBlockSchema).parse([
     type: "statement",
     text: "We do not organize parties. We construct emotional architecture.",
     motion: "pinnedSwap",
-    cue: "grid",
+    cue: "lasers",
   },
   {
     type: "stanza",
@@ -113,7 +113,7 @@ export const manifesto = z.array(manifestoBlockSchema).parse([
     lines: ["Not chaos without purpose.", "Not spectacle without soul.", "Not noise without meaning."],
     motion: "glitchResolve",
   },
-  { type: "statement", text: "Intention. Energy. Transformation. Memory.", motion: "beatWords", cue: "grid" },
+  { type: "statement", text: "Intention. Energy. Transformation. Memory.", motion: "beatWords", cue: "lasers" },
   {
     type: "paragraph",
     text: "Rogue Desire is for those who feel that music can change the shape of a night, and that a night can change the shape of a life.",
