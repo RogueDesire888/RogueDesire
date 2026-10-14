@@ -4,7 +4,6 @@ import { manifesto, type ManifestoBlock } from "@content/manifesto";
 import { Wordmark } from "@/components/brand/Wordmark";
 import { ScrollProgress } from "@/components/manifesto/ScrollProgress";
 import "@/components/manifesto/manifesto.css";
-import { Atmosphere } from "@/components/motion/Atmosphere";
 import { BeatWords, PinnedDissolve, PinnedSwap } from "@/components/motion/pinned";
 import {
   FadeIn,
@@ -122,9 +121,6 @@ export default function ManifestoPage() {
           </footer>
         )}
       </article>
-
-      {/* Mounted last so its cue triggers are measured after pin spacers exist. */}
-      <Atmosphere initial={opening?.cue ?? "void"} />
     </div>
   );
 }

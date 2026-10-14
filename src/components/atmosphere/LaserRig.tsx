@@ -10,7 +10,7 @@ const VERT = `attribute vec2 aPos; void main() { gl_Position = vec4(aPos, 0.0, 1
 // Fog: domain-warped fbm, dense low and thinning upward, rolling sideways.
 // Bursts: plumes rising from the bottom edge. Beams fan from three horizon
 // origins and scatter through the fog (a faint core survives clear air).
-// Fog behind text-bearing rects is capped at 25%. Beat lift stays under 15%.
+// Fog behind text-bearing rects is capped at 25% and beams dim to half there. Beat lift stays under 15%.
 const FRAG = `
 precision mediump float;
 uniform vec2 uRes, uPointer, uPointerVel;
@@ -50,7 +50,7 @@ float burst(vec4 b, vec2 p, float aspect) {
   float n = fbm(p * 3.2 - vec2(0.0, uTime * 0.35) + b.x * 13.0);
   float plume = exp(-dot(d, d) / (spread * spread)) * (0.6 + 1.4 * n);
   float fade = smoothstep(0.0, 0.8, t) * (1.0 - smoothstep(3.5, 8.0, t));
-  return plume * fade * b.z;
+  return plume * fade * b.z * 0.75;
 }
 
 void main() {
@@ -97,8 +97,9 @@ void main() {
     beams += (uGlow * core * 1.2 + uAccent * bloom) * fade * on;
     bleed += bloom * fade * on;
   }
-  col += beams * (0.45 + 1.6 * fog) * uBeamAmt;
-  col += uAccent * bleed * fog * 0.6 * uBeamAmt;
+  float beamText = 1.0 - cap * 0.5; // beams dim to half behind text
+  col += beams * (0.45 + 1.6 * fog) * uBeamAmt * beamText;
+  col += uAccent * bleed * fog * 0.6 * uBeamAmt * beamText;
   col *= 1.0 + uBeat * 0.15;
   gl_FragColor = vec4(col, 1.0);
 }`;
@@ -111,8 +112,15 @@ const TIERS = [
   { octaves: 2, scale: 0.5, mobileOctaves: 2, mobileScale: 0.4, pointer: false },
 ];
 
-/** Per atmosphere cue: beam and fog strength. Fog sections keep beams low. */
-const CUE_MIX: Record<string, [beams: number, fog: number]> = { lasers: [1, 0.45], fog: [0.12, 0.6] };
+/** Per atmosphere cue: beam and fog strength. The fog field itself never stops. */
+const CUE_MIX: Record<string, [beams: number, fog: number]> = {
+  hero: [1, 0.8],
+  lasers: [1, 0.45],
+  fog: [0.12, 0.6],
+  flare: [0.2, 0.5],
+  grid: [0.3, 0.4],
+  void: [0, 0.3],
+};
 
 function hexToRgb(value: string): [number, number, number] {
   const hex = value.trim().replace("#", "");
@@ -306,8 +314,10 @@ export function LaserRig({ className = "", fallback = "grid" }: { className?: st
       }
 
       const [beamTarget, fogTarget] = (atmo && CUE_MIX[atmo.dataset.activeCue ?? ""]) || [1, 0.8];
-      beamAmt += (beamTarget - beamAmt) * Math.min(1, dt * 1.5);
-      fogAmt += (fogTarget - fogAmt) * Math.min(1, dt * 1.5);
+      // ~0.45s time constant: a cue change settles in ~1.2s without popping.
+      const ease = 1 - Math.exp(-dt / 0.45);
+      beamAmt += (beamTarget - beamAmt) * ease;
+      fogAmt += (fogTarget - fogAmt) * ease;
 
       pointer.on *= Math.exp(-dt / 0.7); // recovers over ~2s
       pointer.vx *= Math.exp(-dt / 0.5);

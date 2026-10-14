@@ -10,15 +10,15 @@
   opacity: 1;
 }
 
-.rd-atmo[data-active-cue="fog"] .rd-cue-rig {
-  opacity: 0.8;
-}
 
 .rd-atmo[data-active-cue="grid"] .rd-cue-grid {
   opacity: 0.25;
 }
 
-.rd-atmo[data-active-cue="lasers"] .rd-cue-rig {
+
+/* The rig layer never crossfades: the fog room is continuous. Cues only shift
+   beam strength and fog density inside the shader. */
+.rd-cue-rig {
   opacity: 0.85;
 }
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Grain } from "@/components/atmosphere/Grain";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { Atmosphere } from "@/components/motion/Atmosphere";
 import { CursorGlow } from "@/components/motion/CursorGlow";
 import { site } from "@/config/site";
 import { fontVariables } from "@/lib/fonts";
@@ -35,6 +36,8 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          {/* After main: its cue triggers are built after the page's pins. */}
+          <Atmosphere />
           <CursorGlow />
           <Grain />
         </PulseProvider>
