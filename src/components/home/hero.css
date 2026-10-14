@@ -1,18 +1,27 @@
 /* Home hero: scene background + spinning wordmark + floor reflection.
    Spin speed: --spin-duration in globals.css. */
 
-/* Hero box. Mobile: tall enough for the spinning wordmark above the contained
-   scene. Desktop: min(88vh, 1100px) filled by the scene (cover, bottom-anchored). */
+/* Hero box. Mobile: the tall scene fills the viewport under the 4rem nav
+   (cover; only the sides crop, so the horizon stays at 62.5% from the top).
+   Desktop: min(88vh, 1100px) filled by the wide scene (cover, bottom-anchored). */
 .rd-hero {
   position: relative;
   width: 100%;
   overflow: hidden;
-  aspect-ratio: 1.39;
-  /* Distance from hero bottom to the wordmark base, and wordmark width. */
-  --wm-base: 14%;
-  --wm-width: 85%;
+  height: calc(100svh - 4rem);
+  /* Distance from hero bottom to the wordmark base (the horizon under the laser
+     origin), and wordmark width (the full spin stays inside the scene). */
+  --wm-base: 37.5%;
+  --wm-width: 78%;
   /* Horizon height (from the bottom) for the laser rig shader. */
-  --rig-horizon: 0.19;
+  --rig-horizon: 0.375;
+}
+
+/* Phones: a soft floor scrim keeps the tagline readable over the grid. */
+@media (max-width: 767px) {
+  .rd-hero-copy {
+    background: linear-gradient(to top, color-mix(in srgb, var(--rd-black) 88%, transparent) 55%, transparent);
+  }
 }
 
 /* Beat response (pulse vars are 0 under reduced motion). Max +12% / +14%. */
@@ -74,7 +83,6 @@ img.rd-hero-scene {
 
 @media (min-width: 768px) {
   .rd-hero {
-    aspect-ratio: auto;
     height: min(88vh, 1100px);
     --wm-base: 21%;
     --wm-width: 46%;
