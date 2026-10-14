@@ -31,4 +31,4 @@ export function publicValue<T>(
   return value;
 }
 
-export const instagramUrl = `https://www.instagram.com/${site.instagram}/`;
+export const instagramUrl = `https://instagram.com/${site.instagram}`;
