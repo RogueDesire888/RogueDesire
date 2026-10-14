@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { FadeIn } from "@/components/motion/primitives";
 import { PinnedDissolve } from "@/components/motion/pinned";
 import { YearbookBook } from "@/components/objects/YearbookBook";
 import { SignalCta } from "@/components/ui/SignalCta";
 import { container } from "@/components/ui/styles";
 
-export const metadata: Metadata = { title: "Yearbook" };
+export const metadata: Metadata = pageMeta({
+  title: "Yearbook",
+  description: "A visual archive of temporary realities. Every chapter in Year One will be preserved inside the first Rogue Desire yearbook.",
+  path: "/yearbook",
+});
 
 const body = "max-w-[60ch] text-lg leading-relaxed text-rd-chrome md:text-xl";
 const heading = "font-display text-4xl leading-[1.08] font-semibold text-rd-white md:text-6xl";

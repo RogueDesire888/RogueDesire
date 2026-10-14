@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import type { ReactNode } from "react";
 import { manifesto, type ManifestoBlock } from "@content/manifesto";
 import { Wordmark } from "@/components/brand/Wordmark";
@@ -17,10 +18,11 @@ import { StanzaLine } from "@/components/motion/text";
 import { SignalCta } from "@/components/ui/SignalCta";
 import { container, display, stanza } from "@/components/ui/styles";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Manifesto",
   description: "We are architects of temporary realities. The Rogue Desire manifesto.",
-};
+  path: "/manifesto",
+});
 
 /** Narrow centered column on mobile, left-aligned with an offset on desktop. */
 const column = "mx-auto max-w-[36rem] md:mx-0 md:ml-[12%] md:max-w-none";

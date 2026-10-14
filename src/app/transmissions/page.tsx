@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { FadeInStagger } from "@/components/motion/primitives";
 import { container } from "@/components/ui/styles";
 import { formatTransmissionDate, getTransmissions } from "@/lib/transmissions";
 
-export const metadata: Metadata = { title: "Transmissions" };
+export const metadata: Metadata = pageMeta({
+  title: "Transmissions",
+  description: "Signals from inside the universe. This is not a blog.", // brand-lint-ignore (approved copy)
+  path: "/transmissions",
+});
 
 export default async function TransmissionsPage() {
   const transmissions = await getTransmissions();

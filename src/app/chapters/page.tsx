@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { FadeInStagger } from "@/components/motion/primitives";
 import { Button } from "@/components/ui/Button";
 import { Redaction } from "@/components/ui/Redaction";
@@ -6,7 +7,11 @@ import { container } from "@/components/ui/styles";
 import { isLive } from "@/config/nav";
 import { getConceptListing, getNextChapter } from "@/lib/content";
 
-export const metadata: Metadata = { title: "Chapters" };
+export const metadata: Metadata = pageMeta({
+  title: "Chapters",
+  description: "Year One: Awakening. Every chapter happens once. One night. One world.",
+  path: "/chapters",
+});
 
 const SYMBOLS = [
   { name: "Lightning", meaning: "Emotional ignition, energy, awakening." },

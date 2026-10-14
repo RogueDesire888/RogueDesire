@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import "@/components/archive/vault.css";
 import { FadeIn, ScrubWords } from "@/components/motion/primitives";
@@ -7,7 +8,11 @@ import { container, display } from "@/components/ui/styles";
 import { isLive } from "@/config/nav";
 import { getChapter } from "@/lib/content";
 
-export const metadata: Metadata = { title: "Archive" };
+export const metadata: Metadata = pageMeta({
+  title: "Archive",
+  description: "The event ends. The archive begins. Every Rogue Desire chapter is temporary by nature.",
+  path: "/archive",
+});
 
 const COMPARTMENTS = [
   { name: "Fragments" },

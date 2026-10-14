@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { CircleForm } from "@/components/circle/CircleForm";
@@ -8,7 +9,11 @@ import { isLive } from "@/config/nav";
 import { circleStateFromQuery } from "@/lib/circle-shared";
 import { createFormToken } from "@/lib/circle-token";
 
-export const metadata: Metadata = { title: "Enter the Circle" };
+export const metadata: Metadata = pageMeta({
+  title: "Enter the Circle",
+  description: "This is not a mailing list. It is the beginning of a community built around temporary realities.",
+  path: "/circle",
+});
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 

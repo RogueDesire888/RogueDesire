@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import { Disclosure } from "@/components/chapter/Disclosure";
 import { NightArc } from "@/components/chapter/NightArc";
@@ -21,10 +22,11 @@ export function generateMetadata(): Metadata {
   const chapter = getChapter(SLUG);
   if (!chapter) return {};
   const firstSentence = chapter.opening?.[0]?.split(/(?<=\.)\s/)[0] ?? "";
-  return {
+  return pageMeta({
     title: `Chapter ${chapter.number}: ${chapter.title}`,
     description: [chapter.line, firstSentence].filter(Boolean).join(" "),
-  };
+    path: `/chapters/${chapter.slug}`,
+  });
 }
 
 export default function AscensionPage() {

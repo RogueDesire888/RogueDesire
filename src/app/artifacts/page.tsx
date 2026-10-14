@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { CharmSpinner } from "@/components/artifacts/CharmSpinner";
 import { FlyerLightbox } from "@/components/artifacts/FlyerLightbox";
@@ -9,7 +10,11 @@ import { container, display } from "@/components/ui/styles";
 import { isLive } from "@/config/nav";
 import { getArtifacts, getChapter, isPublic } from "@/lib/content";
 
-export const metadata: Metadata = { title: "Artifacts" };
+export const metadata: Metadata = pageMeta({
+  title: "Artifacts",
+  description: "Not merchandise. Not promotion. Preservation. Rogue Desire artifacts are physical records of temporary realities.",
+  path: "/artifacts",
+});
 
 const section = `${container} py-24 md:py-36`;
 const body = "max-w-[60ch] text-lg leading-relaxed text-rd-chrome md:text-xl";

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { LightSweep } from "@/components/motion/primitives";
@@ -22,7 +23,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const t = await getTransmission((await params).slug);
-  return t ? { title: t.title, description: t.excerpt } : {};
+  return t ? pageMeta({ title: t.title, description: t.excerpt, path: `/transmissions/${t.slug}` }) : {};
 }
 
 export default async function TransmissionPage({ params }: Params) {
