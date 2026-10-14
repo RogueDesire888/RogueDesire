@@ -1,11 +1,22 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, type CSSProperties, type ReactNode, type Ref } from "react";
 import "./reveal.css";
 
-/** Fades and lifts its content once, the first time it scrolls into view. */
-export function Reveal({ children, className = "" }: { children: ReactNode; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
+type RevealProps = {
+  children: ReactNode;
+  className?: string;
+  /** "rise": fade and slight lift. "fade": opacity only. */
+  variant?: "rise" | "fade";
+  /** Delay in ms after entering view. */
+  delay?: number;
+  /** Use "span" inside headings and other phrasing content. */
+  as?: "div" | "span";
+};
+
+/** Reveals its content once, the first time it scrolls into view. */
+export function Reveal({ children, className = "", variant = "rise", delay = 0, as: Tag = "div" }: RevealProps) {
+  const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const el = ref.current;
@@ -24,8 +35,13 @@ export function Reveal({ children, className = "" }: { children: ReactNode; clas
   }, []);
 
   return (
-    <div ref={ref} className={`rd-reveal ${className}`}>
+    <Tag
+      ref={ref as Ref<HTMLDivElement & HTMLSpanElement>}
+      data-variant={variant}
+      className={`rd-reveal ${className}`}
+      style={{ "--reveal-delay": `${delay}ms` } as CSSProperties}
+    >
       {children}
-    </div>
+    </Tag>
   );
 }
