@@ -1,0 +1,65 @@
+/* Artifact 001 charm: CSS 3D lazy-susan. Height drives every other size. */
+.rd-charm {
+  --charm-h: min(64svh, 620px);
+  --charm-w: calc(var(--charm-h) * 509 / 1400);
+  --t: calc(var(--charm-h) * 0.045); /* ~3mm at real scale */
+  perspective: 1400px;
+}
+
+@media (max-width: 767px) {
+  .rd-charm {
+    --charm-h: min(56svh, 460px);
+  }
+}
+
+.rd-charm-rotor {
+  position: relative;
+  width: var(--charm-w);
+  height: var(--charm-h);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.rd-charm-face,
+.rd-charm-edge {
+  position: absolute;
+  inset: 0;
+}
+
+.rd-charm-face {
+  backface-visibility: hidden;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  /* Violet enamel glow follows the beat (0 under reduced motion). */
+  filter: drop-shadow(
+    0 0 calc(6px + 10px * var(--beat) * (1 + var(--energy)))
+      color-mix(in srgb, var(--rd-violet) 45%, transparent)
+  );
+}
+
+.rd-charm-front {
+  background-image: url("/artifacts/ch001-charm-front.webp");
+  transform: translateZ(calc(var(--t) / 2));
+}
+
+.rd-charm-back {
+  background-image: url("/artifacts/ch001-charm-back.webp");
+  transform: rotateY(180deg) translateZ(calc(var(--t) / 2));
+}
+
+/* Edge layers: the front silhouette filled with dark chrome, stacked through the thickness. */
+.rd-charm-edge {
+  -webkit-mask: url("/artifacts/ch001-charm-mask.png") center / 100% 100% no-repeat;
+  mask: url("/artifacts/ch001-charm-mask.png") center / 100% 100% no-repeat;
+  background: linear-gradient(90deg, #0c0c11, #2e3039 40%, #4a4d57 50%, #23242c 60%, #0c0c11);
+  /* Evenly spaced strictly inside the faces ((i + 0.5) / 12), never coplanar with them. */
+  transform: translateZ(calc(var(--t) * ((var(--i) + 0.5) / 12 - 0.5)));
+}
+
+.rd-charm-reflection {
+  transform: scaleY(-1);
+  opacity: 0.16;
+  filter: blur(3px);
+  -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 45%);
+  mask-image: linear-gradient(to top, #000 0%, transparent 45%);
+}
