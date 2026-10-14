@@ -16,13 +16,8 @@ const FOLLOW_UP: Record<string, { href: string; label: string }> = {
   "002": { href: "/artifacts", label: "View Artifacts" },
 };
 
-// Cache Components requires at least one static param. Until transmissions
-// exist, a placeholder that can never be a valid slug renders the 404.
-const NO_TRANSMISSIONS = "_";
-
 export async function generateStaticParams() {
-  const slugs = (await getTransmissions()).map((t) => ({ slug: t.slug }));
-  return slugs.length > 0 ? slugs : [{ slug: NO_TRANSMISSIONS }];
+  return (await getTransmissions()).map((t) => ({ slug: t.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
