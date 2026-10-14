@@ -22,7 +22,7 @@ export const routes: NavRoute[] = [
   { label: "Artifacts", href: "/artifacts", live: false, primary: true },
   { label: "Collective", href: "/collective", live: false },
   { label: "Yearbook", href: "/yearbook", live: false },
-  { label: "Enter the Circle", href: "/circle", live: false },
+  { label: "Enter the Circle", href: "/circle", live: false, unlisted: true },
 ];
 
 /** Legal routes: footer bottom row only. */
