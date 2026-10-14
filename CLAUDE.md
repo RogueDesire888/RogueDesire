@@ -178,6 +178,7 @@ Legal entity name, public contact email, city reveal timing, venue, date, hours,
   - [ ] 8C. Collective (deferred until real people are confirmed; real people only, never placeholders)
 - [x] 9. SEO: metadata, OG images, sitemap, robots, JSON-LD, 404 (privacy page stays on the Task 11 checklist)
 - [x] 10. QA: links, forms, accessibility, performance, mobile (see docs/qa-report.md; scripts in scripts/qa/)
+  - [x] 10.1. Polish: hero LCP (preload + fetchPriority, inline CSS, AVIF), charm phone variants, Yearbook status, Archive touch hint
 - [ ] 11. Domain cutover
 
 Before domain cutover (Task 11). Task 11 must not proceed until every item is checked:
@@ -217,4 +218,4 @@ SEO (Task 9): every page builds metadata with `pageMeta()` in `src/lib/seo.ts` (
 
 Notes: CSS Modules do not work with the scaffolded Turbopack Tailwind rule in next.config.ts; use plain prefixed CSS files (see src/components/atmosphere/laser-grid.css). Tailwind font utilities: font-sans, font-display (defined with @utility in globals.css). Content imports use the `@content/*` alias; render optional fields only through `isPublic()` from src/lib/content.ts.
 
-Facts split (Task 10): `src/config/site.ts` is client-safe and imported by client components. Anything unconfirmed or private (city, cityPublic, legalName, contactEmail) lives in `src/config/facts.ts`, which imports `server-only` so a client import fails the build. QA (Task 10): `scripts/qa/` holds the crawl, Playwright browser matrix, axe/keyboard/readability runner, asset sizes and Lighthouse script; run against a production build on port 3001 (or `QA_BASE`), results go to `QA_OUT`. Report: `docs/qa-report.md`.
+Facts split (Task 10): `src/config/site.ts` is client-safe and imported by client components. Anything unconfirmed or private (city, cityPublic, legalName, contactEmail) lives in `src/config/facts.ts`, which imports `server-only` so a client import fails the build. QA (Task 10): `scripts/qa/` holds the crawl, Playwright browser matrix, axe/keyboard/readability runner, asset sizes and Lighthouse script; run against a production build on port 3001 (or `QA_BASE`), results go to `QA_OUT`. Report: `docs/qa-report.md`. Images (Task 10.1): `next.config.ts` enables AVIF and inlines global CSS; hero images use `preload` + `fetchPriority="high"` (the reflection copy too, since React preloads the first eager img), and mobile `sizes` are capped at 300px so phones get at most the 900px variant. Charm faces have `-sm` (700px tall) phone variants in charm.css; regenerate both sizes if the source changes.

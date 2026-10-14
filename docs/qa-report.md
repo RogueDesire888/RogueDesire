@@ -1,6 +1,6 @@
 # QA report: Task 10
 
-Full-site pass against a local production build (`next build` + `next start`), October 2026.
+Full-site pass against a local production build (`next build` + `next start`), October 2026. Updated after Task 10.1 (polish); the suite was re-run in full and every check below reflects the 10.1 build.
 Scripts live in `scripts/qa/` (crawl, browser matrix, axe/keyboard/readability, asset sizes, Lighthouse) and can be re-run against any base URL with `QA_BASE` / `QA_OUT`.
 
 ## Summary
@@ -24,7 +24,7 @@ All targets met. Four issues fixed (one truth leak, one no-JS readability bug, t
 - Browser matrix: Chromium, WebKit and Firefox at 375x812, 768x1024 and 1440x900, 108 page loads, zero findings. Grenze Gotisch (display) and Hanken Grotesk (body) loaded everywhere. Pins checked at 768 and 1440 (mobile has no pins by design).
 - WebKit: charm spinner (CSS 3D), yearbook book, menu backdrop blur and the rig all ran without errors or overflow. Playwright WebKit is close to Safari but not identical; a real-device Safari look is still worth one pass before cutover.
 - Keyboard (Home > Manifesto > Chapter 001 > Artifacts > Circle): every visible control reachable in DOM order (14 / 12 / 13 / 15 / 17 stops), all with a visible focus ring. The menu and the flyer lightbox trap Tab, close on Esc and return focus to their opener.
-- Reduced motion and JavaScript disabled: no text left hidden on any page. The manifesto opening is a CSS-only fade (runs without JS). The archive's "Opens after the night." line is a hover/focus hint under a visible "Sealed" label.
+- Reduced motion and JavaScript disabled: no text left hidden on any page. The manifesto opening is a CSS-only fade (runs without JS). The archive's "Opens after the night." line is a hover/focus hint under a visible "Sealed" label, always shown on touch screens.
 
 ## Lighthouse
 
@@ -32,34 +32,36 @@ Local production build, Lighthouse 12. SEO shows 69 because the preview guard se
 
 | Page | Mobile P / A / BP / SEO | Desktop P / A / BP / SEO | Mobile LCP / TBT |
 |---|---|---|---|
-| Home | 88 / 100 / 100 / 100* | 99 / 100 / 100 / 100* | 3.8 s / 90 ms |
-| Manifesto | 94 / 100 / 100 / 100* | 100 / 100 / 100 / 100* | 3.0 s / 90 ms |
-| Chapter 001 | 94 / 100 / 100 / 100* | 100 / 100 / 100 / 100* | 3.0 s / 70 ms |
-| Artifacts | 91 / 100 / 100 / 100* | 100 / 100 / 100 / 100* | 3.4 s / 60 ms |
-| Circle | 93 / 100 / 100 / 100* | 100 / 100 / 100 / 100* | 3.2 s / 80 ms |
+| Home | 91 / 100 / 100 / 100* | 98 / 100 / 100 / 100* | 3.4 s (median of 3.7, 3.3, 3.4) / 120 ms |
+| Manifesto | 92 / 100 / 100 / 100* | 100 / 100 / 100 / 100* | 3.0 s / 160 ms |
+| Chapter 001 | 92 / 100 / 100 / 100* | 100 / 100 / 100 / 100* | 3.0 s / 150 ms |
+| Artifacts | 90 / 100 / 100 / 100* | 100 / 100 / 100 / 100* | 3.4 s / 130 ms |
+| Circle | 98 / 100 / 100 / 100* | 100 / 100 / 100 / 100* | 1.2 s / 170 ms |
 
 \* excluding the expected preview `noindex`.
 
-Home mobile scored 40 on one cold first run (a single 4.7 s main-thread task) and 88 on three later runs; the task did not reproduce under Playwright with or without WebGL, so it is treated as machine contention.
+Home mobile median LCP went from 3.8 s (Task 10) to 3.4 s (Task 10.1): both hero images are preloaded with `fetchPriority="high"`, global CSS is inlined (no render-blocking requests, FCP 0.8 s), and images are served as AVIF (mobile wordmark 103 KB to 26 KB). In Task 10 one cold run scored 40 from machine contention; it did not recur.
 
 ## Performance hygiene
 
 - JS per page (transfer): about 247 KB on every route (251 KB on Chapter 001). Shared runtime plus gsap/ScrollTrigger.
-- Nothing over 500 KB loads before first paint on any page. Heaviest page: `/artifacts` at 888 KB total, from the two charm faces.
-- Ten largest assets shipped:
+- Nothing over 500 KB loads before first paint on any page. Home is down from 620 KB to 480 KB total at 1440.
+- Images: AVIF with WebP fallback via `next/image` (negotiated per browser). Device sizes 640, 900, 1200, 1600, 1920, 2560; hero `sizes` are capped on mobile so a 3x phone gets at most the 900px variant.
+- Charm faces: 700px-tall variants on phones (70 KB + 43 KB, was 238 KB + 188 KB); 1400px on tablets and desktops.
+- Ten largest assets shipped (1440 desktop, first load):
 
 | Size | Asset |
 |---|---|
-| 238 KB | `/artifacts/ch001-charm-front.webp` |
-| 188 KB | `/artifacts/ch001-charm-back.webp` |
-| 143 KB | wordmark via `/_next/image` (w=828) |
-| 74 KB | hero scene via `/_next/image` (w=1920) |
+| 238 KB | `/artifacts/ch001-charm-front.webp` (desktop only) |
+| 188 KB | `/artifacts/ch001-charm-back.webp` (desktop only) |
 | 71 KB | JS chunk (React runtime) |
-| 53 KB | flyer via `/_next/image` (w=384) |
+| 54 KB | `/circle` HTML (inlined CSS) |
 | 46 KB | JS chunk |
 | 44 KB | JS chunk (gsap + ScrollTrigger) |
+| 42 KB | `/` HTML (inlined CSS) |
 | 42 KB | Hanken Grotesk woff2 |
-| 34 KB | Grenze Gotisch woff2 |
+| 41 KB | `/chapters/ascension` HTML |
+| 40 KB | transmission HTML |
 
 ## Truth and brand audit (built HTML, RSC payloads, JS chunks, metadata, JSON-LD)
 
@@ -76,6 +78,15 @@ Home mobile scored 40 on one cold first run (a single 4.7 s main-thread task) an
 3. `ScrubWords` start opacity 0.2 to 0.5: fixes axe serious color-contrast on Manifesto, Chapter 001 and Artifacts.
 4. Night arc inactive phases 0.32 to 0.6: fixes axe serious color-contrast on Chapter 001.
 
+Task 10.1:
+
+5. Hero scene and wordmark preloaded with `fetchPriority="high"` (the reflection copy carries it too, because React preloads the first eager `<img>` and dedupes the second).
+6. Global CSS inlined (`experimental.inlineCss`): no render-blocking stylesheets.
+7. AVIF image format enabled and device sizes tuned; mobile hero images capped at 900px.
+8. Charm faces get 700px-tall phone variants via a media query.
+9. Yearbook: "Status: in development" under Collector editions.
+10. Archive: "Opens after the night." shows on every compartment on touch screens (`hover: none`).
+
 ## Remaining issues
 
 ### Critical
@@ -87,12 +98,10 @@ None in the site. Launch blockers that need account logins, already tracked in C
 - `/privacy` does not exist: build it once `legalName` and `contactEmail` are confirmed.
 
 ### Medium
-- Mobile LCP 3.0 to 3.8 s (home LCP is the wordmark image): add `priority` / `fetchPriority="high"` to the hero wordmark and preload it.
-- Charm faces ship at full size (426 KB on `/artifacts`): resize to 2x display width and serve through `next/image` (AVIF/WebP).
+- Mobile LCP is still 3.0 to 3.4 s in Lighthouse's simulated slow 4G; what remains is main-thread time before paint (shared JS), not image bytes. Next step if needed: defer the WebGL rig and gsap setup until after first paint.
 - Real Safari on iPhone not yet checked by eye: one manual pass of charm, book, menu blur and rig before cutover.
 
 ### Low
-- About 61 KB of unused JS per page (ScrollTrigger on pages without pins): dynamic-import ScrollTrigger only where `useMotion` runs.
-- 13 KB of legacy JS polyfills: tighten `browserslist` to current evergreen browsers.
-- Yearbook has no explicit status label (copy is future tense): add an "In development" line like the Artifacts page.
-- Archive "Opens after the night." appears only on hover/focus: acceptable, could show always on touch screens.
+- 13 KB of legacy polyfills (`Array.prototype.at`, `Object.hasOwn` and others) come from Next's own framework polyfill module, which ships regardless of browserslist; Next's defaults already target Safari 16.4+. Not removable without patching Next: left as is.
+- About 61 KB of unused JS on first load: mostly ScrollTrigger on pages without pins, plus the prefetched `/circle` form chunk (Zod). Fix needs a dynamic import of ScrollTrigger; not a safe one-line change, so deferred.
+- Charm faces have no AVIF version (CSS backgrounds bypass `next/image`): add `image-set()` with AVIF if `/artifacts` weight matters on desktop.
