@@ -1,0 +1,39 @@
+/* Artifact card: 3D tilt + holographic foil driven by --rx, --ry, --mx, --my. */
+.rd-card {
+  --rx: 0deg;
+  --ry: 0deg;
+  --mx: 50%;
+  --my: 50%;
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+  transform-style: preserve-3d;
+}
+
+.rd-card-foil {
+  background:
+    conic-gradient(
+      from calc(var(--ry) * 6 + 200deg) at var(--mx) var(--my),
+      color-mix(in srgb, var(--rd-violet) 70%, transparent),
+      color-mix(in srgb, var(--rd-ice) 60%, transparent),
+      color-mix(in srgb, var(--rd-chrome) 55%, transparent),
+      color-mix(in srgb, var(--rd-violet-soft) 60%, transparent),
+      color-mix(in srgb, var(--rd-violet) 70%, transparent)
+    ),
+    linear-gradient(
+      calc(115deg + var(--rx) * 3),
+      transparent 30%,
+      color-mix(in srgb, var(--rd-white) 35%, transparent) 48%,
+      transparent 62%
+    );
+  background-blend-mode: screen;
+  mix-blend-mode: color-dodge;
+  opacity: 0.32;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rd-card {
+    transform: none;
+  }
+  .rd-card-foil {
+    opacity: 0.18;
+  }
+}
