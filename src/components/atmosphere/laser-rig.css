@@ -3,3 +3,10 @@
 .rd-rig[data-state="live"] .rd-rig-fallback {
   display: none;
 }
+
+/* Reduced motion / no WebGL: a static low fog bank. */
+.rd-rig-fog {
+  background:
+    radial-gradient(120% 60% at 50% 100%, color-mix(in srgb, var(--accent-glow) 16%, transparent), transparent 70%),
+    linear-gradient(to top, color-mix(in srgb, var(--accent) 10%, transparent), transparent 45%);
+}
