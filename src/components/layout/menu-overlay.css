@@ -1,0 +1,43 @@
+/* Menu overlay open/close: short fade plus slight scale. */
+.rd-overlay {
+  opacity: 0;
+  transform: scale(1.02);
+  visibility: hidden;
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease,
+    visibility 0s linear 220ms;
+}
+
+.rd-overlay[data-open="true"] {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease,
+    visibility 0s;
+}
+
+.rd-overlay-link {
+  transition: text-shadow 200ms ease, color 200ms ease;
+}
+
+.rd-overlay-link:hover,
+.rd-overlay-link:focus-visible {
+  color: var(--rd-white);
+  text-shadow:
+    0 0 10px var(--accent-glow),
+    0 0 28px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rd-overlay,
+  .rd-overlay[data-open="true"],
+  .rd-overlay-link {
+    transition: none;
+  }
+  .rd-overlay {
+    transform: none;
+  }
+}

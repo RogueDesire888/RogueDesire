@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Grain } from "@/components/atmosphere/Grain";
+import { Footer } from "@/components/layout/Footer";
+import { Navbar } from "@/components/layout/Navbar";
 import { site } from "@/config/site";
 import { fontVariables } from "@/lib/fonts";
 import "./globals.css";
@@ -25,9 +27,11 @@ export default function RootLayout({
         >
           Skip to content
         </a>
+        <Navbar />
         <main id="main" tabIndex={-1} className="outline-none">
           {children}
         </main>
+        <Footer />
         <Grain />
       </body>
     </html>
