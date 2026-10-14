@@ -37,3 +37,8 @@ export const circleRoute = liveRoutes.find((r) => r.href === CIRCLE_HREF);
 export function isActive(pathname: string, href: string): boolean {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 }
+
+/** True when the route exists in config and is live. Gate every CTA with this. */
+export function isLive(href: string): boolean {
+  return routes.some((r) => r.href === href && r.live) || legalRoutes.some((r) => r.href === href && r.live);
+}
