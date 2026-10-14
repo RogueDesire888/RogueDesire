@@ -176,7 +176,7 @@ Legal entity name, public contact email, city reveal timing, venue, date, hours,
   - [x] 8A. Artifacts and Yearbook
   - [x] 8B. Transmissions and Archive
   - [ ] 8C. Collective (deferred until real people are confirmed; real people only, never placeholders)
-- [ ] 9. SEO: metadata, OG images, sitemap, robots, JSON-LD, privacy page, 404
+- [x] 9. SEO: metadata, OG images, sitemap, robots, JSON-LD, 404 (privacy page stays on the Task 11 checklist)
 - [ ] 10. QA: links, forms, accessibility, performance, mobile
 - [ ] 11. Domain cutover
 
@@ -212,5 +212,7 @@ Artifacts and Yearbook (Task 8A): `/artifacts` (hero, Artifact 001 card, the obj
 
 Transmissions (Task 8B): drop `.mdx` files into `content/transmissions/` (frontmatter validated by `content/transmission-schema.ts`: title, slug, number, type, date, excerpt, chapter, published). `src/lib/transmissions.tsx` (next-mdx-remote/rsc) compiles them at build; paragraphs get FadeIn, and a single-sentence paragraph under 8 words that ends a section gets the pull-line style (text never changed). Follow-up buttons by number: 000 Read the Manifesto, 002 View Artifacts. Transmissions 000 to 002 are live. Cache Components requires at least one transmission for the detail route to build. "This is not a blog." is approved copy and carries `brand-lint-ignore`.
 Archive (Task 8B): `/archive` hero, the Chapter 001 vault (rotating seal ring, six sealed compartments; Artifact 001 and Yearbook link out), all sealed until real archive entries exist.
+
+SEO (Task 9): every page builds metadata with `pageMeta()` in `src/lib/seo.ts` (title, description of 150 characters or less from page copy, canonical, Open Graph, Twitter summary_large_image). Share images are `opengraph-image.tsx` per route via `renderOg()` in `src/lib/og.tsx`; Satori needs static fonts, so it uses `scripts/fonts/GrenzeGotisch-SemiBold.ttf` and `HankenGrotesk-Regular.ttf` (from Google Fonts), while the flyer script uses the variable TTFs. Keep file paths in og.tsx literal or the bundler traces the whole project. Icons: `node scripts/make-icons.mjs` (idol crown and head from the charm front). Indexing guard: `src/proxy.ts` sends `X-Robots-Tag: noindex, nofollow` and `robots.ts` disallows everything unless VERCEL_ENV is production AND the host is roguedesire.com (or www); every *.vercel.app URL stays out of search. `sitemap.ts` reads live routes from nav.ts plus transmissions. Organization JSON-LD is on the home page only. Add Event schema (and anything with date, venue, city, or price) only once the Chapter 001 date and venue are confirmed.
 
 Notes: CSS Modules do not work with the scaffolded Turbopack Tailwind rule in next.config.ts; use plain prefixed CSS files (see src/components/atmosphere/laser-grid.css). Tailwind font utilities: font-sans, font-display (defined with @utility in globals.css). Content imports use the `@content/*` alias; render optional fields only through `isPublic()` from src/lib/content.ts.
