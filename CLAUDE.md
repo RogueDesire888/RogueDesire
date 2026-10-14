@@ -90,9 +90,11 @@ Chapter accents:
 - 005 Velocity: white + chrome + ice
 
 Type:
-- Hanken Grotesk: body and UI. Clean, Swiss, generous spacing, line length under 75ch.
-- Syncopate: chapter titles only (ASCENSION, ECLIPSE), uppercase, wide tracking, optional neon glow.
-- Wordmark: `public/brand/wordmark.webp` (transparent, trimmed, 2193x1373), rendered only via `components/brand/Wordmark.tsx` for small uses. No placeholder font.
+- Wordmark: image asset (`public/brand/wordmark.webp`, `wordmark-sm.webp`), rendered only via `components/brand/Wordmark.tsx`.
+- Grenze Gotisch (display, `font-display`, CSS var --font-display): hero tagline, home statements and headings, chapter titles, future realities, closing lines, manifesto opening/statements/stanzas/signoff, menu overlay links, all section headings. Weight 600 (stanzas 500).
+- Hanken Grotesk (body/UI, `font-sans`): paragraphs, buttons, nav links, footer, forms, small labels, the chapter code seal, "Undisclosed" labels, Roman numerals. Line length under 75ch.
+- Blackletter rules: never uppercase the display face and never use wide letter-spacing on it. Chapter titles render in title case from content ("Ascension"). Letter-spacing normal or -0.005em at display sizes. Line-height ~1.08 for display statements, ~1.25 for stanza lines. Glow treatments unchanged.
+- Use curly apostrophes (U+2019) in copy.
 
 Motion and atmosphere:
 - Black void, grain, fog, laser grid, violet glow. Glow is seasoning, not the system.
@@ -100,6 +102,7 @@ Motion and atmosphere:
   - Primitives in `src/components/motion/`: FadeIn, RevealLines (optional glowWords, stagger), ScrubWords, GlitchResolve, LightSweep, NeonIgnite (primitives.tsx); PinnedSwap, PinnedDissolve, BeatWords (pinned.tsx); Atmosphere (data-cue blocks: void, fog, grid, flare); CursorGlow (site-wide, fine pointer desktop only).
   - Paragraphs only ever get FadeIn (a LightSweep may precede it).
   - Choreography is data: blocks declare `motion` and `cue` (see content/manifesto.ts).
+- Motion setup waits for `document.fonts.ready` before creating ScrollTriggers, then refreshes once (`scheduleRefresh`), so pins measure the final face.
 - Guardrails (non-negotiable):
   - Server render is the final, readable state. Hidden starting states are set only inside effects, only when motion is allowed. Page is fully readable with JS off and under reduced motion.
   - Real text stays in the DOM. Split text keeps the full string for assistive tech (sr-only) and marks pieces aria-hidden.
@@ -179,6 +182,4 @@ Home (Task 4.1): sections in `src/components/home/HomeSections.tsx` (Intro, Rule
 
 Manifesto (Task 5): text lives in `content/manifesto.ts` as typed blocks (opening, statement, stanza, paragraph, signoff); never edit its words. Page: `src/app/manifesto/page.tsx` maps blocks to motion primitives; `ScrollProgress` is the desktop accent progress line. Atmosphere is mounted last so cue triggers are measured after pin spacers exist. Shared styles: `src/components/ui/styles.ts` (container, display). Closing CTA: `src/components/ui/SignalCta.tsx`.
 
-Type lab (temporary): `/type-lab` compares script fonts for display lines. noindex/nofollow, not in nav config, footer, or sitemap. Delete it once a font is chosen.
-
-Notes: CSS Modules do not work with the scaffolded Turbopack Tailwind rule in next.config.ts; use plain prefixed CSS files (see src/components/atmosphere/laser-grid.css). Tailwind font utilities: font-sans, font-title. Content imports use the `@content/*` alias; render optional fields only through `isPublic()` from src/lib/content.ts.
+Notes: CSS Modules do not work with the scaffolded Turbopack Tailwind rule in next.config.ts; use plain prefixed CSS files (see src/components/atmosphere/laser-grid.css). Tailwind font utilities: font-sans, font-display (defined with @utility in globals.css). Content imports use the `@content/*` alias; render optional fields only through `isPublic()` from src/lib/content.ts.
