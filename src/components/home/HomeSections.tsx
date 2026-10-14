@@ -2,6 +2,9 @@ import type { ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { Redaction } from "@/components/ui/Redaction";
 import { Reveal } from "@/components/ui/Reveal";
+import { DropStage } from "@/components/motion/DropStage";
+import { FadeInStagger } from "@/components/motion/primitives";
+import { SetZone } from "@/components/motion/SetZone";
 import { SignalCta } from "@/components/ui/SignalCta";
 import { container, display } from "@/components/ui/styles";
 import { isLive } from "@/config/nav";
@@ -15,7 +18,7 @@ const hairline = "border-rd-chrome/20";
 
 export function Intro() {
   return (
-    <section data-cue="fog" data-fog-cap className={`${container} ${screen}`}>
+    <SetZone data-cue="fog" data-fog-cap intensity={1} className={`${container} ${screen}`}>
       <h2 className={`${display} max-w-[16ch] text-rd-white`}>
         We do not organize parties.
         <Reveal as="span" variant="fade" delay={600} className="block text-rd-chrome">
@@ -33,7 +36,7 @@ export function Intro() {
           </Button>
         </div>
       )}
-    </section>
+    </SetZone>
   );
 }
 
@@ -57,7 +60,7 @@ const RULES = [
 
 export function Rules() {
   return (
-    <section data-cue="fog" data-fog-cap aria-label="The rules" className={container}>
+    <SetZone data-cue="build" data-fog-cap intensity={[0.3, 1]} aria-label="The rules" className={container}>
       <ol>
         {RULES.map((rule) => (
           <li key={rule.numeral} className={screen}>
@@ -69,7 +72,7 @@ export function Rules() {
           </li>
         ))}
       </ol>
-    </section>
+    </SetZone>
   );
 }
 
@@ -109,47 +112,51 @@ export function ChapterDossier() {
       data-cue="lasers"
       data-chapter={chapter.slug}
       aria-labelledby="dossier-title"
-      className={`${container} ${screen}`}
+      className={container}
     >
-      <Reveal className="flex flex-col items-start">
-        <p className="text-xs tracking-[0.35em] text-rd-chrome">{chapter.code}</p>
-        <h2
-          id="dossier-title"
-          className="mt-8 max-w-full font-display text-[clamp(3.5rem,12vw,9rem)] leading-[1.08] font-semibold tracking-[-0.005em] text-rd-white rd-text-glow"
-        >
-          {chapter.title}
-        </h2>
-        <p className="mt-8 text-2xl text-rd-white md:text-3xl">{chapter.line}</p>
-        {isPublic(chapter.description) && (
-          <p className="mt-6 max-w-[60ch] leading-relaxed text-rd-chrome">{chapter.description}</p>
-        )}
+      <DropStage className="flex flex-col justify-center py-24 md:min-h-svh md:py-10">
+        <div data-drop-shake className="flex flex-col items-start">
+          <p data-drop="seal" className="text-xs tracking-[0.35em] text-rd-chrome">{chapter.code}</p>
+          <h2
+            id="dossier-title"
+            data-drop="title"
+            className="mt-6 max-w-full font-display text-[clamp(3.5rem,12vw,9rem)] leading-[1.08] font-semibold tracking-[-0.005em] text-rd-white rd-text-glow"
+          >
+            {chapter.title}
+          </h2>
+          <p data-drop="line" className="mt-6 text-2xl text-rd-white md:text-3xl">{chapter.line}</p>
+          {isPublic(chapter.description) && (
+            <p data-drop="desc" className="mt-5 max-w-[60ch] leading-relaxed text-rd-chrome">{chapter.description}</p>
+          )}
 
-        <dl className={`mt-14 w-full max-w-[720px] border-b ${hairline}`}>
-          {rows.map((row) => (
-            <div
-              key={row.label}
-              className={`grid grid-cols-[6.5rem_1fr] items-center gap-4 border-t ${hairline} py-4 sm:grid-cols-[10rem_1fr]`}
-            >
-              <dt className="text-sm text-rd-chrome">{row.label}</dt>
-              <dd className="flex min-w-0 items-center gap-4 text-rd-white">
-                {row.value ?? (
-                  <>
-                    <Redaction seed={`${chapter.code}-${row.label}`} />
-                    <span className="shrink-0 text-sm whitespace-nowrap text-rd-chrome">Undisclosed</span>
-                  </>
-                )}
-              </dd>
+          <dl className={`mt-10 w-full max-w-[720px] border-b ${hairline}`}>
+            {rows.map((row) => (
+              <div
+                key={row.label}
+                data-drop="row"
+                className={`grid grid-cols-[6.5rem_1fr] items-center gap-4 border-t ${hairline} py-3 sm:grid-cols-[10rem_1fr]`}
+              >
+                <dt className="text-sm text-rd-chrome">{row.label}</dt>
+                <dd className="flex min-w-0 items-center gap-4 text-rd-white">
+                  {row.value ?? (
+                    <>
+                      <Redaction seed={`${chapter.code}-${row.label}`} />
+                      <span className="shrink-0 text-sm whitespace-nowrap text-rd-chrome">Undisclosed</span>
+                    </>
+                  )}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <p data-drop="details" className="mt-5 text-sm text-rd-chrome">Details surface when the signal is ready.</p>
+
+          {isLive(href) && (
+            <div data-drop="cta" className="mt-8">
+              <Button href={href}>Enter Chapter {chapter.number}</Button>
             </div>
-          ))}
-        </dl>
-        <p className="mt-6 text-sm text-rd-chrome">Details surface when the signal is ready.</p>
-
-        {isLive(href) && (
-          <div className="mt-10">
-            <Button href={href}>Enter Chapter {chapter.number}</Button>
-          </div>
-        )}
-      </Reveal>
+          )}
+        </div>
+      </DropStage>
     </section>
   );
 }
@@ -159,11 +166,11 @@ export function FutureRealities() {
   if (concepts.length === 0) return null;
 
   return (
-    <section data-cue="fog" data-fog-cap aria-labelledby="future-title" className={`${container} py-24 md:py-32`}>
+    <SetZone data-cue="fog" data-fog-cap intensity={0.15} aria-labelledby="future-title" className={`${container} py-24 md:py-32`}>
       <h2 id="future-title" className="font-display text-3xl leading-[1.08] font-semibold text-rd-white md:text-4xl">
         Future realities
       </h2>
-      <ul className={`mt-8 border-b ${hairline}`}>
+      <FadeInStagger className={`mt-8 border-b ${hairline}`}>
         {concepts.map((c) =>
           c.revealed ? (
             <li
@@ -190,15 +197,15 @@ export function FutureRealities() {
             </li>
           ),
         )}
-      </ul>
+      </FadeInStagger>
       <p className="mt-6 text-sm text-rd-chrome">Each reality is revealed when it is ready.</p>
-    </section>
+    </SetZone>
   );
 }
 
 export function Closing() {
   return (
-    <section data-cue="flare" data-fog-cap className={`${container} ${screen} flex flex-col items-center text-center`}>
+    <SetZone data-cue="flare" data-fog-cap intensity={0.4} burstOnEnter={0.4} className={`${container} ${screen} flex flex-col items-center text-center`}>
       <p className={`${display} max-w-[18ch] text-rd-white`}>
         The crowd is not an audience. The crowd is the artwork.
       </p>
@@ -206,6 +213,6 @@ export function Closing() {
         Enter with curiosity. Leave with a story. Keep the evidence.
       </p>
       <SignalCta className="mt-12" />
-    </section>
+    </SetZone>
   );
 }
