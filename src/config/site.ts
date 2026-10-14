@@ -13,6 +13,8 @@ export const site = {
   instagram: "roguedesireofficial",
   city: "Greenville, SC",
   cityPublic: false,
+  /** Pulse engine tempo. Capped at 180 (3 pulses per second) by the engine. */
+  bpm: 128,
   legalName: null as string | null,
   contactEmail: null as string | null,
 } as const;
