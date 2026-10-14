@@ -33,23 +33,27 @@ export const chapters = z.array(chapterSchema).parse([
     ...unconfirmed,
     frequencies: [],
     artifacts: ["RD-Y1-CH001-ASC-CARD"],
-    longDescription:
-      "Chapter 001: Ascension marks the first public opening of Rogue Desire. For one night, sound, light, movement, and desire converge inside a temporary reality built beneath violet glow and chrome reflection. The night moves through mystery, seduction, liberation, and afterglow.",
-    closingLine: "This is not an event. This is the beginning of the ascent.",
-    meaning: ["Awakening.", "Elevation.", "Transformation."],
-    palette: [
-      { name: "Matte Black", token: "--rd-black" },
-      { name: "Electric Violet", token: "--rd-violet" },
-      { name: "Chrome Silver", token: "--rd-chrome" },
-      { name: "White Light", token: "--rd-white" },
-      { name: "Ice Blue", token: "--rd-ice" },
+    opening: [
+      "For one night, a door opens. Behind it: fog, violet light, chrome, and a sound you feel in your chest before you hear it.",
+      "Ascension is the first Rogue Desire reality. Nothing like it has happened before, and it will not happen again.",
     ],
-    soundDirection:
-      "Hypnotic grooves, minimal tech, tech house, deep house, melodic and progressive tension, emotional release.",
+    closingLine: "This is not an event. This is the beginning of the ascent.",
+    meaning: ["Cross.", "Ignite.", "Release.", "Remember."],
+    elements: [
+      { name: "Lightning", line: "The moment the room ignites and every body answers at once.", token: "--rd-white" },
+      { name: "Chrome", line: "Your reflection everywhere, a little distorted, a little more free.", token: "--rd-chrome" },
+      { name: "Violet", line: "The light that makes strangers look like they belong to you.", token: "--rd-violet" },
+      { name: "Void", line: "Darkness built on purpose, so you can disappear into it.", token: "--rd-black" },
+    ],
+    soundDirection: {
+      line: "Built for the body first. Hypnotic and deep, then rising: grooves that pull you under, tension that refuses to break, and a release worth waiting for.",
+      genres: "Minimal tech, tech house, deep house, melodic and progressive.",
+    },
     styleDirection: {
-      line: "Dress for the reality you are entering.",
+      lines: ["Dress for the reality you are entering.", "Come as the version of yourself you don\u2019t bring to work."],
       words: ["Black", "Chrome", "Violet", "Leather", "Mesh", "Shadow", "Texture", "Distortion"],
     },
+    guestCodeIntro: "Inside, the code is simple.",
     guestCode: [
       "Respect the music.",
       "Respect the space.",
@@ -60,10 +64,10 @@ export const chapters = z.array(chapterSchema).parse([
     ],
     // Phases only. Never publish times for them.
     nightArc: [
-      { role: "threshold", name: "Threshold", mood: "Mystery", line: "The crossing. Eyes adjust. The room reveals itself." },
-      { role: "activation", name: "Activation", mood: "Seduction", line: "The groove takes hold. Bodies find the pulse." },
-      { role: "peak", name: "Peak", mood: "Liberation", line: "Everything releases at once." },
-      { role: "afterglow", name: "Afterglow", mood: "Afterglow", line: "The night softens. No one wants to leave." },
+      { role: "threshold", name: "Threshold", mood: "Mystery", line: "You cross the door and the outside world stops following you. Low light. Low voices. A pulse you feel before you hear." },
+      { role: "activation", name: "Activation", mood: "Seduction", line: "The first real groove. Strangers start moving in the same direction. Nobody decided to dance. It just started." },
+      { role: "peak", name: "Peak", mood: "Liberation", line: "Lasers cut the fog. The room stops being a room. For a few minutes, nobody remembers their phone exists." },
+      { role: "afterglow", name: "Afterglow", mood: "Afterglow", line: "The tempo softens. The light warms. You don\u2019t want the lights to come up." },
     ],
   },
   {

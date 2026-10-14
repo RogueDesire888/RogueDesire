@@ -44,12 +44,16 @@ export const chapterSchema = z.object({
   /** Artifact codes belonging to this chapter. */
   artifacts: z.array(z.string()),
   // Chapter page content (revealed chapters only). Never times for the night arc.
-  longDescription: nullableText.optional(),
+  /** Opening paragraphs: the first is the hook. */
+  opening: z.array(z.string().min(1)).optional(),
   closingLine: nullableText.optional(),
   meaning: z.array(z.string().min(1)).optional(),
-  palette: z.array(z.object({ name: z.string().min(1), token: z.string().regex(/^--rd-[a-z-]+$/) })).optional(),
-  soundDirection: nullableText.optional(),
-  styleDirection: z.object({ line: z.string().min(1), words: z.array(z.string().min(1)) }).optional(),
+  elements: z
+    .array(z.object({ name: z.string().min(1), line: z.string().min(1), token: z.string().regex(/^--rd-[a-z-]+$/) }))
+    .optional(),
+  soundDirection: z.object({ line: z.string().min(1), genres: z.string().min(1) }).optional(),
+  styleDirection: z.object({ lines: z.array(z.string().min(1)).min(1), words: z.array(z.string().min(1)) }).optional(),
+  guestCodeIntro: nullableText.optional(),
   guestCode: z.array(z.string().min(1)).optional(),
   nightArc: z
     .array(z.object({ role: frequencyRole, name: z.string().min(1), mood: z.string().min(1), line: z.string().min(1) }))
