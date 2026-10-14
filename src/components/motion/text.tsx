@@ -1,9 +1,4 @@
-import { Fragment, type CSSProperties } from "react";
-
-const GLOW: CSSProperties = {
-  textShadow:
-    "0 0 10px var(--accent-glow), 0 0 26px color-mix(in srgb, var(--accent) 70%, transparent)",
-};
+import { Fragment } from "react";
 
 /**
  * A full string for assistive tech plus aria-hidden word spans for animation.
@@ -25,7 +20,7 @@ export function Words({
       <span aria-hidden="true">
         {words.map((word, i) => (
           <Fragment key={i}>
-            <span data-word className={`inline-block ${wordClassName}`} style={glow ? GLOW : undefined}>
+            <span data-word className={`inline-block ${wordClassName} ${glow ? "rd-text-glow" : ""}`}>
               {word}
             </span>
             {i < words.length - 1 ? " " : null}
@@ -56,7 +51,7 @@ export function StanzaLine({ line, glowWords = [] }: { line: string; glowWords?:
                 {glowWords.includes(bare) ? (
                   <span className="relative inline-block">
                     {word}
-                    <span data-glow aria-hidden="true" className="absolute inset-0 text-accent" style={GLOW}>
+                    <span data-glow aria-hidden="true" className="rd-text-glow absolute inset-0 text-accent">
                       {word}
                     </span>
                   </span>

@@ -23,6 +23,12 @@
 
   /* Home hero wordmark: one full rotation */
   --spin-duration: 14s;
+
+  /* Pulse engine outputs (src/lib/pulse.tsx). Stay 0 under reduced motion. */
+  --beat: 0;
+  --bar: 0;
+  --energy: 0;
+  --scroll-dir: 1;
 }
 
 [data-chapter="ascension"] {
@@ -64,6 +70,20 @@
    it can read next/font's --font-display without a self-referencing variable. */
 @utility font-display {
   font-family: var(--font-display), serif;
+}
+
+/* Accent glow on display text. Intensity follows --beat, stronger with --energy. */
+.rd-text-glow {
+  --glow-k: calc(var(--beat) * (1 + var(--energy)));
+  text-shadow:
+    0 0 calc(10px + 6px * var(--glow-k)) var(--accent-glow),
+    0 0 calc(26px + 14px * var(--glow-k)) color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+/* Primary button resting glow on the beat (hover glow overrides). */
+.rd-beat-glow {
+  box-shadow: 0 0 calc(4px + 10px * var(--beat) * (1 + var(--energy)))
+    color-mix(in srgb, var(--accent-glow) 30%, transparent);
 }
 
 html {

@@ -11,11 +11,28 @@
   /* Distance from hero bottom to the wordmark base, and wordmark width. */
   --wm-base: 14%;
   --wm-width: 85%;
+  /* Horizon height (from the bottom) for the laser rig shader. */
+  --rig-horizon: 0.19;
+}
+
+/* Beat response (pulse vars are 0 under reduced motion). Max +12% / +14%. */
+img.rd-hero-scene {
+  filter: brightness(calc(1 + var(--beat) * 0.06 * (1 + var(--energy))));
+  will-change: filter;
+}
+
+.rd-hero-wordmark {
+  scale: calc(1 + var(--beat) * 0.006 * (1 + var(--energy)));
+}
+
+.rd-hero-wordmark .rd-spin {
+  filter: brightness(calc(1 + var(--beat) * 0.07 * (1 + var(--energy))));
 }
 
 /* Scene edges dissolve into --rd-black: soft top and sides, short bottom fade
-   so the grid floor stays visible. */
-.rd-hero-scene {
+   so the grid floor stays visible. The laser rig shares the same mask. */
+.rd-hero-scene,
+.rd-hero-rig {
   -webkit-mask-image:
     linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%),
     linear-gradient(to bottom, transparent 0%, #000 12%, #000 93%, transparent 100%);
@@ -59,6 +76,7 @@
     height: min(88vh, 1100px);
     --wm-base: 21%;
     --wm-width: 46%;
+    --rig-horizon: 0.32;
   }
 }
 

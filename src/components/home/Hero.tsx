@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { LaserRig } from "@/components/atmosphere/LaserRig";
 import "./hero.css";
 import { site } from "@/config/site";
 import heroScene from "../../../public/brand/hero-scene.webp";
@@ -21,6 +22,7 @@ export function Hero() {
           sizes="100vw"
           className="rd-hero-scene absolute bottom-0 left-0 h-auto w-full md:top-0 md:h-full md:object-cover md:object-bottom"
         />
+        <LaserRig fallback={false} className="rd-hero-rig absolute inset-0 opacity-70 mix-blend-screen" />
         <div className="rd-hero-reflection" aria-hidden="true">
           <div className="rd-hero-flip">
             <div className="rd-spin-stage">

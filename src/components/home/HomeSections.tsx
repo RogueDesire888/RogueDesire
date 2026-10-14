@@ -113,11 +113,7 @@ export function ChapterDossier() {
         <p className="text-xs tracking-[0.35em] text-rd-chrome">{chapter.code}</p>
         <h2
           id="dossier-title"
-          className="mt-8 max-w-full font-display text-[clamp(3.5rem,12vw,9rem)] leading-[1.08] font-semibold tracking-[-0.005em] text-rd-white"
-          style={{
-            textShadow:
-              "0 0 12px color-mix(in srgb, var(--accent-glow) 60%, transparent), 0 0 40px color-mix(in srgb, var(--accent) 45%, transparent)",
-          }}
+          className="mt-8 max-w-full font-display text-[clamp(3.5rem,12vw,9rem)] leading-[1.08] font-semibold tracking-[-0.005em] text-rd-white rd-text-glow"
         >
           {chapter.title}
         </h2>
