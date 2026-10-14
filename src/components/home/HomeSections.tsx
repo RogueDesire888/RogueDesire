@@ -2,15 +2,15 @@ import type { ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { Redaction } from "@/components/ui/Redaction";
 import { Reveal } from "@/components/ui/Reveal";
-import { CIRCLE_HREF, isLive } from "@/config/nav";
-import { instagramUrl, site } from "@/config/site";
+import { SignalCta } from "@/components/ui/SignalCta";
+import { container, display } from "@/components/ui/styles";
+import { isLive } from "@/config/nav";
 import { getConceptListing, getNextChapter, isPublic } from "@/lib/content";
 
-const container = "mx-auto w-full max-w-[1200px] px-4 md:px-8";
+const MANIFESTO_HREF = "/manifesto";
+
 /** Each major statement gets roughly its own screen on desktop. */
 const screen = "py-24 md:flex md:min-h-[70vh] md:flex-col md:justify-center md:py-28";
-const display =
-  "text-[clamp(2.5rem,6vw,5.5rem)] font-medium leading-[1.02] tracking-[-0.02em] text-balance";
 const hairline = "border-rd-chrome/20";
 
 export function Intro() {
@@ -26,6 +26,13 @@ export function Intro() {
         Rogue Desire is an electronic music experience told in chapters. Each one is built for a
         single night, then it&apos;s gone.
       </p>
+      {isLive(MANIFESTO_HREF) && (
+        <div className="mt-10">
+          <Button href={MANIFESTO_HREF} variant="secondary">
+            Read the Manifesto
+          </Button>
+        </div>
+      )}
     </section>
   );
 }
@@ -192,8 +199,6 @@ export function FutureRealities() {
 }
 
 export function Closing() {
-  const circleLive = isLive(CIRCLE_HREF);
-
   return (
     <section className={`${container} ${screen} flex flex-col items-center text-center`}>
       <p className={`${display} max-w-[18ch] text-rd-white`}>
@@ -202,18 +207,7 @@ export function Closing() {
       <p className="mt-8 max-w-[65ch] text-rd-chrome">
         Enter with curiosity. Leave with a story. Keep the evidence.
       </p>
-      <div className="mt-12 flex flex-col items-center gap-3">
-        {circleLive ? (
-          <Button href={CIRCLE_HREF}>Enter the Circle</Button>
-        ) : (
-          <>
-            <Button href={instagramUrl} target="_blank" rel="noopener noreferrer">
-              Follow the signal
-            </Button>
-            <span className="text-sm text-rd-chrome">@{site.instagram}</span>
-          </>
-        )}
-      </div>
+      <SignalCta className="mt-12" />
     </section>
   );
 }
