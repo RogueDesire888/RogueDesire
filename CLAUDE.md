@@ -179,4 +179,6 @@ Home (Task 4.1): sections in `src/components/home/HomeSections.tsx` (Intro, Rule
 
 Manifesto (Task 5): text lives in `content/manifesto.ts` as typed blocks (opening, statement, stanza, paragraph, signoff); never edit its words. Page: `src/app/manifesto/page.tsx` maps blocks to motion primitives; `ScrollProgress` is the desktop accent progress line. Atmosphere is mounted last so cue triggers are measured after pin spacers exist. Shared styles: `src/components/ui/styles.ts` (container, display). Closing CTA: `src/components/ui/SignalCta.tsx`.
 
+Type lab (temporary): `/type-lab` compares script fonts for display lines. noindex/nofollow, not in nav config, footer, or sitemap. Delete it once a font is chosen.
+
 Notes: CSS Modules do not work with the scaffolded Turbopack Tailwind rule in next.config.ts; use plain prefixed CSS files (see src/components/atmosphere/laser-grid.css). Tailwind font utilities: font-sans, font-title. Content imports use the `@content/*` alias; render optional fields only through `isPublic()` from src/lib/content.ts.
