@@ -96,7 +96,17 @@ Type:
 
 Motion and atmosphere:
 - Black void, grain, fog, laser grid, violet glow. Glow is seasoning, not the system.
-- One orchestrated moment per page beats scattered effects. No fade-up on every section, no hover animation on every card.
+- Motion kit (gsap + ScrollTrigger, registered once in `src/lib/motion.ts`; use `useMotion(ref, setup)` and `usePrefersReducedMotion()`):
+  - Primitives in `src/components/motion/`: FadeIn, RevealLines (optional glowWords, stagger), ScrubWords, GlitchResolve, LightSweep, NeonIgnite (primitives.tsx); PinnedSwap, PinnedDissolve, BeatWords (pinned.tsx); Atmosphere (data-cue blocks: void, fog, grid, flare); CursorGlow (site-wide, fine pointer desktop only).
+  - Paragraphs only ever get FadeIn (a LightSweep may precede it).
+  - Choreography is data: blocks declare `motion` and `cue` (see content/manifesto.ts).
+- Guardrails (non-negotiable):
+  - Server render is the final, readable state. Hidden starting states are set only inside effects, only when motion is allowed. Page is fully readable with JS off and under reduced motion.
+  - Real text stays in the DOM. Split text keeps the full string for assistive tech (sr-only) and marks pieces aria-hidden.
+  - Animate only transform, opacity, and filter. ScrollTriggers are cleaned up on unmount (gsap.matchMedia revert).
+  - No pinning under 768px: the same effect plays as an in-view sequence.
+  - No flashes brighter than a soft glow, never more than 3 per second (BeatWords pulses are throttled; NeonIgnite flickers twice).
+  - Fixed atmosphere layers sit at z-index -10 between the html background and content; body is transparent for this.
 - Everything respects `prefers-reduced-motion`. Atmosphere layers are aria-hidden and pointer-events none.
 - Performance first: CSS/SVG over canvas libraries, lazy-load below-the-fold media.
 
@@ -167,6 +177,6 @@ Navigation (Task 3): routes live in `src/config/nav.ts`. Navbar, menu overlay, a
 
 Home (Task 4.1): sections in `src/components/home/HomeSections.tsx` (Intro, Rules, ChapterDossier, FutureRealities, Closing); hero in `Hero.tsx`. Chapter data comes only from `getNextChapter()` / `getConceptChapters()`. CTAs gate on `isLive(href)` from nav.ts. Reveals: `src/components/ui/Reveal.tsx` ("rise" for the Chapter 001 dossier, "fade" with delay for intro line 2). Redaction bars: `src/components/ui/Redaction.tsx`, width seeded from a string so it is stable. Accent overrides for unrevealed chapters are left out of globals.css until reveal so their names never ship; add `[data-chapter="<slug>"]` when a chapter is revealed.
 
-Manifesto (Task 5): text lives in `content/manifesto.ts` as typed blocks (opening, statement, stanza, paragraph, signoff); never edit its words. Page: `src/app/manifesto/page.tsx`, opening fade on load is its one orchestrated moment, `ScrollProgress` is the desktop accent progress line. Shared styles: `src/components/ui/styles.ts` (container, display). Closing CTA: `src/components/ui/SignalCta.tsx`.
+Manifesto (Task 5): text lives in `content/manifesto.ts` as typed blocks (opening, statement, stanza, paragraph, signoff); never edit its words. Page: `src/app/manifesto/page.tsx` maps blocks to motion primitives; `ScrollProgress` is the desktop accent progress line. Atmosphere is mounted last so cue triggers are measured after pin spacers exist. Shared styles: `src/components/ui/styles.ts` (container, display). Closing CTA: `src/components/ui/SignalCta.tsx`.
 
 Notes: CSS Modules do not work with the scaffolded Turbopack Tailwind rule in next.config.ts; use plain prefixed CSS files (see src/components/atmosphere/laser-grid.css). Tailwind font utilities: font-sans, font-title. Content imports use the `@content/*` alias; render optional fields only through `isPublic()` from src/lib/content.ts.
