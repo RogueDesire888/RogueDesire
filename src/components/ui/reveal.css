@@ -1,14 +1,17 @@
 /* Scroll reveals: "rise" is the page's orchestrated moment, "fade" is a quiet
-   delayed fade (delay via --reveal-delay). */
-.rd-reveal {
-  opacity: 0;
-  transition:
-    opacity 1400ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
-    transform 1400ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
-}
+   delayed fade (delay via --reveal-delay). Hidden only when scripting runs, so
+   content stays readable with JavaScript disabled. */
+@media (scripting: enabled) {
+  .rd-reveal {
+    opacity: 0;
+    transition:
+      opacity 1400ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
+      transform 1400ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
+  }
 
-.rd-reveal[data-variant="rise"] {
-  transform: translateY(28px);
+  .rd-reveal[data-variant="rise"] {
+    transform: translateY(28px);
+  }
 }
 
 .rd-reveal[data-revealed="true"] {
