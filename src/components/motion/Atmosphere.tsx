@@ -51,11 +51,11 @@ export function Atmosphere({ initial = "void" }: { initial?: Cue }) {
 
   return (
     <div ref={ref} aria-hidden="true" data-active-cue={initial} className="rd-atmo pointer-events-none fixed inset-0 -z-10">
-      <div className="rd-cue rd-cue-fog" />
       <div className="rd-cue rd-cue-grid">
         <LaserGrid />
       </div>
-      <div className="rd-cue rd-cue-lasers">
+      {/* One rig serves both "lasers" and "fog" cues; it reads the cue for its beam/fog mix. */}
+      <div className="rd-cue rd-cue-rig">
         <LaserRig className="absolute inset-0" />
       </div>
       <div className="rd-cue rd-cue-flare" />

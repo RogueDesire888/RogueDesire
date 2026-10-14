@@ -98,14 +98,14 @@ export default function ManifestoPage() {
       <article className={`${container} pb-32 md:pb-48`}>
         <div className={`${column} flex flex-col gap-28 md:gap-44`}>
           {body.map((block, i) => (
-            <div key={i} data-cue={block.cue}>
+            <div key={i} data-cue={block.cue} data-fog-cap>
               {renderBlock(block)}
             </div>
           ))}
         </div>
 
         {signoff && (
-          <footer data-cue={signoff.cue} className="mt-40 flex flex-col items-center text-center md:mt-56">
+          <footer data-cue={signoff.cue} data-fog-cap className="mt-40 flex flex-col items-center text-center md:mt-56">
             {signoff.motion === "neonIgnite" ? (
               <NeonIgnite className="w-32">
                 <Wordmark size="sm" />
