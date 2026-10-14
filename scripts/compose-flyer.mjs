@@ -95,7 +95,7 @@ const background = { r: px[0], g: px[1], b: px[2], alpha: 1 };
 const bg = `rgb(${px[0]},${px[1]},${px[2]})`;
 
 // Elements.
-const wordmarkW = Math.round(W * 0.58);
+const wordmarkW = Math.round(W * 0.42);
 const wordmarkBuf = await sharp(WORDMARK).resize({ width: wordmarkW }).png().toBuffer();
 const wordmarkH = (await sharp(wordmarkBuf).metadata()).height;
 const title = await textToWidth(loadFont(GRENZE, 600), "Ascension", Math.round(W * 0.8), WHITE);
