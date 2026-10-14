@@ -72,9 +72,12 @@ export function Navbar() {
               </ul>
             )}
             {circleRoute && (
-              <Button href={circleRoute.href} variant="primary" className="hidden md:inline-flex">
-                {circleRoute.label}
-              </Button>
+              // Wrapper hides it on mobile: the Button's own inline-flex would win over "hidden".
+              <span className="hidden md:block">
+                <Button href={circleRoute.href} variant="primary">
+                  {circleRoute.label}
+                </Button>
+              </span>
             )}
             <button
               ref={menuButtonRef}
