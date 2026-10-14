@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Grain } from "@/components/atmosphere/Grain";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { CursorGlow } from "@/components/motion/CursorGlow";
 import { site } from "@/config/site";
 import { fontVariables } from "@/lib/fonts";
 import "./globals.css";
@@ -32,6 +33,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <CursorGlow />
         <Grain />
       </body>
     </html>

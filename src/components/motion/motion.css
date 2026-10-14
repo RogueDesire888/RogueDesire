@@ -1,0 +1,57 @@
+/* Atmosphere cue layers: crossfade over ~1.2s. */
+.rd-cue {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1200ms ease;
+}
+
+.rd-atmo[data-active-cue="fog"] .rd-cue-fog,
+.rd-atmo[data-active-cue="flare"] .rd-cue-flare {
+  opacity: 1;
+}
+
+.rd-atmo[data-active-cue="grid"] .rd-cue-grid {
+  opacity: 0.25;
+}
+
+.rd-cue-fog::before,
+.rd-cue-fog::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  animation: rd-fog-drift 28s ease-in-out infinite alternate;
+}
+
+.rd-cue-fog::before {
+  background: radial-gradient(38% 32% at 30% 40%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%);
+}
+
+.rd-cue-fog::after {
+  background: radial-gradient(34% 30% at 72% 64%, color-mix(in srgb, var(--accent-glow) 8%, transparent), transparent 70%);
+  animation-duration: 36s;
+  animation-direction: alternate-reverse;
+}
+
+.rd-cue-flare {
+  background: radial-gradient(60% 45% at 50% 100%, color-mix(in srgb, var(--accent) 26%, transparent), transparent 72%);
+}
+
+@keyframes rd-fog-drift {
+  from {
+    transform: translate3d(-4%, -2%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(5%, 3%, 0) scale(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rd-cue {
+    transition: none;
+  }
+  .rd-cue-fog::before,
+  .rd-cue-fog::after {
+    animation: none;
+  }
+}
