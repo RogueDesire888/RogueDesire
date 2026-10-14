@@ -11,25 +11,25 @@
     "prebuild": "npm run lint:brand"
   },
   "dependencies": {
-    "gsap": "^3.15.0",
+    "gsap": "3.15.0",
     "next": "16.4.0",
-    "next-mdx-remote": "^6.0.0",
+    "next-mdx-remote": "6.0.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "server-only": "^0.0.1",
-    "zod": "^4.6.7"
+    "server-only": "0.0.1",
+    "zod": "4.6.7"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.13.0",
-    "@tailwindcss/turbopack": "^4",
-    "@types/node": "^26.6.5",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^10.12.0",
+    "@axe-core/playwright": "4.13.0",
+    "@tailwindcss/turbopack": "4.3.3",
+    "@types/node": "26.6.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "eslint": "10.12.0",
     "eslint-config-next": "16.4.0",
-    "opentype.js": "^2.0.0",
-    "playwright": "^1.64.1",
-    "tailwindcss": "^4",
-    "typescript": "^6.0.3"
+    "opentype.js": "2.0.0",
+    "playwright": "1.64.1",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.3"
   }
 }
